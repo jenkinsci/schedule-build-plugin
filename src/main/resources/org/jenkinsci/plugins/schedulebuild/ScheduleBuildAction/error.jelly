@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
+  <l:layout title="Test">
+    <st:include page="sidepanel.jelly" it="${it.owner}" />
+    <l:main-panel>
+        <h1>${%Project} ${it.owner.name}</h1>
+            <st:header name="refresh" value="4;url=${it.owner.absoluteUrl}schedule" />
+            <div class="error">${%Error}</div>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

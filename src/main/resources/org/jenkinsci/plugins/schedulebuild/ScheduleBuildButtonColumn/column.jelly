@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<!-- TODO add taglibs such as: xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" -->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:i="jelly:fmt">
+    <td>
+     <j:if test="${job.hasPermission(job.BUILD)}">
+      <a href="job/${job.name}/schedule" title="${%ScheduleBuildColumn.Title}">
+        <img alt="${%ScheduleBuildColumn.Title}" src="${rootURL}/plugin/schedule-build-plugin/schedule_24x24.png" title="${%ScheduleBuildColumn.Title}" />
+      </a>
+    </j:if>
+    </td>
+</j:jelly>

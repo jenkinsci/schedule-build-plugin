@@ -1,0 +1,7 @@
+<!--
+  This view is used to render the installed plugins page.
+-->
+<div>
+    Adds capability to schedule a build for a later point in time.
+</div>
+
