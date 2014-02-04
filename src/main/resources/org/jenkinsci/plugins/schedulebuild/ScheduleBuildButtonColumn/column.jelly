@@ -4,7 +4,7 @@
     <td>
      <j:if test="${job.hasPermission(job.BUILD)}">
       <a href="job/${job.name}/schedule" title="${%ScheduleBuildColumn.Title}">
-        <img alt="${%ScheduleBuildColumn.Title}" src="${rootURL}/plugin/schedule-build-plugin/schedule_24x24.png" title="${%ScheduleBuildColumn.Title}" />
+        <img alt="${%ScheduleBuildColumn.Title}" src="${rootURL}/plugin/schedule-build/schedule_24x24.png" title="${%ScheduleBuildColumn.Title}" />
       </a>
     </j:if>
     </td>

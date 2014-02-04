@@ -36,7 +36,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     
     public String getIconFileName() {
-        return target.hasPermission(Job.BUILD) ? "/plugin/schedule-build-plugin/schedule.png" : null;
+        return target.hasPermission(Job.BUILD) ? "/plugin/schedule-build/schedule.png" : null;
     }
 
     public String getDisplayName() {
@@ -58,7 +58,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
     
     public String getIconPath() {
-        return Hudson.getInstance().getRootUrl() + "plugin/schedule-build-plugin/";
+        return Hudson.getInstance().getRootUrl() + "plugin/schedule-build/";
     }
            
     public String getDefaultDate() {
