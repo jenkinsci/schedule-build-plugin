@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>schedule-build</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3.1-SNAPSHOT</version>
   <name>Schedule Build Plugin</name>
   <packaging>hpi</packaging>
   <description>Adds capability to schedule a build for a later point in time</description>
@@ -48,5 +48,18 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
+  
+  <plugin>
+	  <artifactId>maven-release-plugin</artifactId>
+	  <version>${maven-release-plugin.version}</version>
+	  <dependencies>
+		<dependency>
+		  <groupId>org.apache.maven.scm</groupId>
+		  <artifactId>maven-scm-provider-gitexe</artifactId>
+		  <version>1.9</version>
+		</dependency>
+	  </dependencies>
+	</plugin>
+
 
 </project>
