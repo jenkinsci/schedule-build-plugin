@@ -3,11 +3,11 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.549</version>
+    <version>1.509.3</version>
   </parent>
 
   <artifactId>schedule-build-plugin</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>Schedule Build Plugin</name>
   <packaging>hpi</packaging>
   <description>Adds capability to schedule a build for a later point in time</description>
