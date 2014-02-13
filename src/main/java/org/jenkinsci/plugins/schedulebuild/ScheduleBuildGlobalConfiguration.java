@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import org.jenkinsci.plugins.schedulebuild.Messages;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import java.text.DateFormat;
@@ -10,6 +9,7 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 @Extension
@@ -27,8 +27,12 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
     
     public String getDefaultScheduleTime() {
-        return DateFormat.getTimeInstance().format(this.defaultScheduleTime);
+        return getTimeFormat().format(this.defaultScheduleTime);
     } 
+
+    private DateFormat getTimeFormat() {
+        return DateFormat.getTimeInstance(DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
+    }
     
     public Date getDefaultScheduleTimeObject() {
         return this.defaultScheduleTime;
@@ -36,7 +40,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
         try {
-            DateFormat.getTimeInstance().parse(value);
+            getTimeFormat().parse(value);
         } catch(ParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_ParsingError());
         }
@@ -47,7 +51,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         if(json.containsKey("defaultScheduleTime")) {
             try {
-                this.defaultScheduleTime = DateFormat.getTimeInstance().parse(json.getString("defaultScheduleTime"));
+                this.defaultScheduleTime = getTimeFormat().parse(json.getString("defaultScheduleTime"));
                 save();
                 return true;
             } catch(ParseException ex) {

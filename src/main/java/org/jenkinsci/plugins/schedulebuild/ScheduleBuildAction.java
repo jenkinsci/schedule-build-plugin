@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import org.jenkinsci.plugins.schedulebuild.Messages;
 import hudson.StructuredForm;
 import hudson.model.Action;
 import hudson.model.AbstractProject;
@@ -17,6 +16,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -36,11 +36,11 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     
     public String getIconFileName() {
-        return target.hasPermission(Job.BUILD) ? "/plugin/schedule-build/schedule.png" : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/schedule.png" : null;
     }
 
     public String getDisplayName() {
-            return target.hasPermission(Job.BUILD) ? Messages.ScheduleBuildAction_DisplayName() : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? Messages.ScheduleBuildAction_DisplayName() : null;
     }
     
     public String getUrlName() {
@@ -63,7 +63,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
            
     public String getDefaultDate() {
         Date buildtime = getDefaultDateObject();
-        return DateFormat.getInstance().format(buildtime);
+        return dateFormat().format(buildtime);
     }
     
     public Date getDefaultDateObject() {
@@ -83,7 +83,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     public FormValidation doCheckDate(@QueryParameter String date) {
         Date ddate, now = new Date();
         try {
-             ddate = DateFormat.getInstance().parse(date);
+             ddate = dateFormat().parse(date);
         }
         catch(ParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());   
@@ -101,7 +101,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
         if (param.containsKey("date")) {
             try {
-                ddate = DateFormat.getInstance().parse(param.getString("date"));
+                ddate = dateFormat().parse(param.getString("date"));
             } catch (ParseException ex) {
                 return HttpResponses.redirectTo("error");
             }
@@ -113,5 +113,9 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         }
         
         return HttpResponses.redirectTo(getOwner().getAbsoluteUrl() + "build?delay=" + quietperiod / 1000 + "sec");
+    }
+
+    private DateFormat dateFormat() {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
     }
 }
