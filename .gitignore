@@ -1,3 +1,7 @@
 target/**
 work/**
 nbactions-jenkins.xml
+/target
+/.settings
+/.classpath
+/.project
