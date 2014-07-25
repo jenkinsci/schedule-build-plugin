@@ -36,7 +36,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     
     public String getIconFileName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/schedule.png" : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/images/schedule.png" : null;
     }
 
     public String getDisplayName() {
@@ -51,7 +51,6 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
             return true;
     }
     
-    @Override
     public Object getTarget() {
         target.checkPermission(Job.BUILD);
         return this;
