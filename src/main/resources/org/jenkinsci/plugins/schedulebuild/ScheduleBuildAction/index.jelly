@@ -6,7 +6,7 @@
             <h1>${%Project} ${it.owner.name}</h1>
             <f:form name="schedule" action="next" method="post">
                 <f:entry title="${%BuildOn}:" field="date">
-                    <f:textbox value="${it.defaultDate}" checkUrl="'${rootURL}/job/${it.owner.name}/schedule/checkDate?date=' + encodeURIComponent(this.value)" onKeyUp="this.onchange();"/>
+                    <f:textbox value="${it.defaultDate}" checkUrl="'${rootURL}/${it.owner.url}/schedule/checkDate?date=' + encodeURIComponent(this.value)" onKeyUp="this.onchange();"/>
                 </f:entry>
                 <f:entry>
                     <f:submit value="${%Schedule}"/>
