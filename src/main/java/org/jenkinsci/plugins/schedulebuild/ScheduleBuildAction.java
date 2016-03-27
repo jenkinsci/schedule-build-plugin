@@ -93,7 +93,13 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
                 
         return FormValidation.ok();       
     }
-       
+    long quietperiod;
+
+    public long getQuietPeriodInSeconds(){
+        return quietperiod/1000;
+    }
+
+
     public HttpResponse doNext(StaplerRequest req) throws FormException, ServletException, IOException {
         JSONObject param = StructuredForm.get(req);
         Date ddate = getDefaultDateObject(), now = new Date();
@@ -106,12 +112,12 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
             }
         }
 
-        long quietperiod = ddate.getTime() - now.getTime() + ScheduleBuildAction.securityMargin; // 120 sec security margin
+        quietperiod = ddate.getTime() - now.getTime() + ScheduleBuildAction.securityMargin; // 120 sec security margin
         if (quietperiod < 0) {
             return HttpResponses.redirectTo("error");
         }
-        
-        return HttpResponses.redirectTo(getOwner().getAbsoluteUrl() + "build?delay=" + quietperiod / 1000 + "sec");
+
+        return HttpResponses.forwardToView(this, "redirect");
     }
 
     private DateFormat dateFormat() {
