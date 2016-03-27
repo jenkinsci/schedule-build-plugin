@@ -101,7 +101,9 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
 
     public HttpResponse doNext(StaplerRequest req) throws FormException, ServletException, IOException {
-        JSONObject param = StructuredForm.get(req);
+        //Deprecated function StructureForm.get()
+        //JSONObject param = StructuredForm.get(req);
+        JSONObject param = req.getSubmittedForm();
         Date ddate = getDefaultDateObject(), now = new Date();
 
         if (param.containsKey("date")) {
