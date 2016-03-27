@@ -3,22 +3,19 @@
   <l:layout title="Redirecting...">
     <l:main-panel>
       <!--
-        Auto submits the form to the community server
+        Auto submits the form to the jenkins server
       -->
       <p>
         Submitting your changes to the server...
       </p>
       <script>
-    var xmlhttp;
-    if(window.XMLHttpRequest){
+      var xmlhttp;
+      if(window.XMLHttpRequest){
         xmlhttp = new XMLHttpRequest();
-    } else{
+      } else{
         xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-
-
-    xmlhttp.onreadystatechange = function(){
+      }
+      xmlhttp.onreadystatechange = function(){
         if(xmlhttp.readyState === 4){
             if(xmlhttp.status === 200 || xmlhttp.status === 201){
                  window.location="${it.owner.absoluteUrl}"
@@ -28,12 +25,10 @@
                 return false;
             }
         }
-    };
-    xmlhttp.open("POST", "${it.owner.absoluteUrl}build?delay=${it.quietPeriodInSeconds}sec", true);
-    xmlhttp.send();
-
-
- </script>
+      };
+      xmlhttp.open("POST", "${it.owner.absoluteUrl}build?delay=${it.quietPeriodInSeconds}sec", true);
+      xmlhttp.send();
+      </script>
     </l:main-panel>
   </l:layout>
 </j:jelly>
