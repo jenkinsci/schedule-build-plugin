@@ -1,0 +1,34 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+  <l:layout title="Redirecting...">
+    <l:main-panel>
+      <!--
+        Auto submits the form to the jenkins server
+      -->
+      <p>
+        Submitting your changes to the server...
+      </p>
+      <script>
+      var xmlhttp;
+      if(window.XMLHttpRequest){
+        xmlhttp = new XMLHttpRequest();
+      } else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState === 4){
+            if(xmlhttp.status === 200 || xmlhttp.status === 201){
+                 window.location="${it.owner.absoluteUrl}"
+                 return false;
+            } else {
+                 window.location="${it.owner.absoluteUrl}"
+                return false;
+            }
+        }
+      };
+      xmlhttp.open("POST", "${it.owner.absoluteUrl}build?delay=${it.quietPeriodInSeconds}sec", true);
+      xmlhttp.send();
+      </script>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>
