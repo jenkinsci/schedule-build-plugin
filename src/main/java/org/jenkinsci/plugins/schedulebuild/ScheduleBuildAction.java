@@ -57,7 +57,18 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
     
     public String getIconPath() {
-        return Hudson.getInstance().getRootUrl() + "plugin/schedule-build/";
+        
+        Jenkins instance = Jenkins.getInstance();
+        
+        if(instance != null)
+        {
+            String rootUrl = instance.getRootUrl();
+            
+            if(rootUrl != null)
+                return rootUrl + "plugin/schedule-build/";
+        }
+        
+        throw new IllegalStateException("couldn't load rootUrl");
     }
            
     public String getDefaultDate() {
