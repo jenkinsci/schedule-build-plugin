@@ -35,7 +35,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
     
     public Date getDefaultScheduleTimeObject() {
-        return this.defaultScheduleTime;
+        return new Date(this.defaultScheduleTime.getTime());
     } 
     
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
