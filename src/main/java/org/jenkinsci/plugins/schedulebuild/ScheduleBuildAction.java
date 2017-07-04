@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import hudson.StructuredForm;
 import hudson.model.Action;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor.FormException;
@@ -12,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
@@ -24,13 +24,13 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     private final static long securityMargin = 120*1000;
     private final static long oneDay = 24*3600*1000;
     
-    private final AbstractProject target;
+    private final Job<?,?> target;
 
-    public ScheduleBuildAction(final AbstractProject target) {
+    public ScheduleBuildAction(final Job<?,?> target) {
         this.target = target;
     }
 
-    public AbstractProject<?,?> getOwner() {
+    public Job<?,?> getOwner() {
         return target;
     }
 
@@ -57,7 +57,18 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
     
     public String getIconPath() {
-        return Hudson.getInstance().getRootUrl() + "plugin/schedule-build/";
+        
+        Jenkins instance = Jenkins.getInstance();
+        
+        if(instance != null)
+        {
+            String rootUrl = instance.getRootUrl();
+            
+            if(rootUrl != null)
+                return rootUrl + "plugin/schedule-build/";
+        }
+        
+        throw new IllegalStateException("couldn't load rootUrl");
     }
            
     public String getDefaultDate() {
