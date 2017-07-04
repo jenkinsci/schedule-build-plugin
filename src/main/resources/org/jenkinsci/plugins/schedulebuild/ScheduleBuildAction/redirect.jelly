@@ -8,26 +8,9 @@
       <p>
         Submitting your changes to the server...
       </p>
+       <script src="${rootURL}/plugin/schedule-build/scheduleRequest.js"/>
       <script>
-      var xmlhttp;
-      if(window.XMLHttpRequest){
-        xmlhttp = new XMLHttpRequest();
-      } else{
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-      }
-      xmlhttp.onreadystatechange = function(){
-        if(xmlhttp.readyState === 4){
-            if(xmlhttp.status === 200 || xmlhttp.status === 201){
-                 window.location="${it.owner.absoluteUrl}"
-                 return false;
-            } else {
-                 window.location="${it.owner.absoluteUrl}"
-                return false;
-            }
-        }
-      };
-      xmlhttp.open("POST", "${it.owner.absoluteUrl}build?delay=${it.quietPeriodInSeconds}sec", true);
-      xmlhttp.send();
+      	sumbitScheduleRequest("${it.owner.absoluteUrl}", ${it.quietPeriodInSeconds});
       </script>
     </l:main-panel>
   </l:layout>
