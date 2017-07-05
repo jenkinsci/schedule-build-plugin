@@ -5,3 +5,5 @@ nbactions-jenkins.xml
 /.settings
 /.classpath
 /.project
+/.apt_generated/
+/.factorypath
