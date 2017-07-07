@@ -1,11 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:section title="${%Section_Title}">
-  <f:entry title="${%DefaultScheduleBuildTime}" field="defaultScheduleTime">
-    <f:textbox />
-  </f:entry>
-  <f:entry title="${%TimeZone}" field="timeZone">
-    <f:textbox />
-  </f:entry>
+  <f:section title="${%Section_Title}">
+    <f:entry title="${%DefaultScheduleBuildTime}" field="defaultScheduleTime">
+      <f:textbox />
+    </f:entry>
+    <f:entry title="${%TimeZone}" field="timeZone">
+      <f:textbox />
+    </f:entry>
   </f:section>
 </j:jelly>

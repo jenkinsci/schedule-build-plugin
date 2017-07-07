@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -41,7 +42,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
 
     public TimeZone getTimeZoneObject() {
-        return TimeZone.getTimeZone(timeZone);
+        return TimeZone.getTimeZone(getTimeZone());
     }
 
     private DateFormat getTimeFormat() {
@@ -59,6 +60,15 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_ParsingError());
         }
         return FormValidation.ok();
+    }
+    
+    public FormValidation doCheckTimeZone(@QueryParameter String value) {
+    	TimeZone zone = TimeZone.getTimeZone(value);
+    	if(StringUtils.equals(zone.getID(), value)) {
+    		return FormValidation.ok();
+    	}else {
+            return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_TimeZoneError());
+    	}
     }
 
     @Override
