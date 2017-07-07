@@ -1,18 +1,19 @@
 package org.jenkinsci.plugins.schedulebuild;
 
 import hudson.model.Action;
-import hudson.model.AbstractProject;
 import hudson.model.Descriptor.FormException;
-import hudson.model.Hudson;
 import hudson.model.Job;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.util.FormValidation;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
@@ -129,10 +130,14 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         if (quietperiod < 0) {
             return HttpResponses.redirectTo("error");
         }
-
         return HttpResponses.forwardToView(this, "redirect");
     }
 
+    public boolean isJobParameterized() {
+    	ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
+    	return paramDefinitions != null && paramDefinitions.getParameterDefinitions() != null && paramDefinitions.getParameterDefinitions().size() > 0;
+    }
+    
     private DateFormat dateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
     }

@@ -10,7 +10,7 @@
       </p>
        <script src="${rootURL}/plugin/schedule-build/scheduleRequest.js"/>
       <script>
-      	sumbitScheduleRequest("${it.owner.absoluteUrl}", ${it.quietPeriodInSeconds});
+      	sumbitScheduleRequest("${it.owner.absoluteUrl}", ${it.quietPeriodInSeconds}, ${it.jobParameterized});
       </script>
     </l:main-panel>
   </l:layout>
