@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
@@ -15,27 +16,29 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
-import hudson.model.AbstractProject;
 import hudson.model.Action;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 public class ScheduleBuildAction implements Action, StaplerProxy {
-    
-	private final Job<?,?> target;
+
+    private static final Logger LOGGER = Logger.getLogger(ScheduleBuildAction.class.getName());
+
+    private final Job<?, ?> target;
     private final static long securityMargin = 120 * 1000;
     private final static long oneDay = 24 * 3600 * 1000;
 
+    private long quietperiod;
 
-    public ScheduleBuildAction(final Job<?,?> target) {
+    public ScheduleBuildAction(final Job<?, ?> target) {
         this.target = target;
     }
 
-    public Job<?,?> getOwner() {
+    public Job<?, ?> getOwner() {
         return target;
     }
 
@@ -65,23 +68,19 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public String getIconPath() {
-        
         Jenkins instance = Jenkins.getInstance();
-        
-        if(instance != null)
-        {
+        if (instance != null) {
             String rootUrl = instance.getRootUrl();
-            
-            if(rootUrl != null)
+
+            if (rootUrl != null) {
                 return rootUrl + "plugin/schedule-build/";
+            }
         }
-        
         throw new IllegalStateException("couldn't load rootUrl");
     }
 
     public String getDefaultDate() {
-        Date buildtime = getDefaultDateObject();
-        return dateFormat().format(buildtime);
+        return dateFormat().format(getDefaultDateObject());
     }
 
     public Date getDefaultDateObject() {
@@ -90,6 +89,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         try {
             now = dateFormat.parse(dateFormat.format(now));
         } catch (ParseException e) {
+            LOGGER.log(Level.WARNING, "Error while parsing date", e);
         }
         buildtime.setHours(defaultScheduleTime.getHours());
         buildtime.setMinutes(defaultScheduleTime.getMinutes());
@@ -112,13 +112,12 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
         }
 
-        if (now.getTime() > ddate.getTime() + ScheduleBuildAction.securityMargin) // 120 sec security margin
+        if (now.getTime() > ddate.getTime() + ScheduleBuildAction.securityMargin) {
             return FormValidation.error(Messages.ScheduleBuildAction_DateInPastError());
+        }
 
         return FormValidation.ok();
     }
-
-    long quietperiod;
 
     public long getQuietPeriodInSeconds() {
         return quietperiod / 1000;
@@ -133,6 +132,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         try {
             now = dateFormat.parse(dateFormat.format(now));
         } catch (ParseException e) {
+            LOGGER.log(Level.WARNING, "Error while parsing date", e);
         }
 
         if (param.containsKey("date")) {
@@ -151,10 +151,10 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public boolean isJobParameterized() {
-    	ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
-    	return paramDefinitions != null && paramDefinitions.getParameterDefinitions() != null && paramDefinitions.getParameterDefinitions().size() > 0;
+        ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
+        return paramDefinitions != null && paramDefinitions.getParameterDefinitions() != null && paramDefinitions.getParameterDefinitions().size() > 0;
     }
-    
+
     private DateFormat dateFormat() {
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
         df.setTimeZone(new ScheduleBuildGlobalConfiguration().getTimeZoneObject());

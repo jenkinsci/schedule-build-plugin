@@ -1,18 +1,18 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import org.jenkinsci.plugins.schedulebuild.Messages;
+import org.kohsuke.stapler.StaplerRequest;
+
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
 
 public class ScheduleBuildButtonColumn extends ListViewColumn {
     public static final class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
         public String getDisplayName() {
-         return Messages.ScheduleBuildButtonColumn_DisplayName();
+            return Messages.ScheduleBuildButtonColumn_DisplayName();
         }
 
         @Override
@@ -33,5 +33,5 @@ public class ScheduleBuildButtonColumn extends ListViewColumn {
     public Descriptor<ListViewColumn> getDescriptor() {
         return DESCRIPTOR;
     }
-    
+
 }

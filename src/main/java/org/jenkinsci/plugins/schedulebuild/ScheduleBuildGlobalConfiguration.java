@@ -11,7 +11,6 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Extension;
-import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
@@ -51,7 +50,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     public Date getDefaultScheduleTimeObject() {
         return new Date(this.defaultScheduleTime.getTime());
-    } 
+    }
 
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
         try {
@@ -61,14 +60,14 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         }
         return FormValidation.ok();
     }
-    
+
     public FormValidation doCheckTimeZone(@QueryParameter String value) {
-    	TimeZone zone = TimeZone.getTimeZone(value);
-    	if(StringUtils.equals(zone.getID(), value)) {
-    		return FormValidation.ok();
-    	}else {
+        TimeZone zone = TimeZone.getTimeZone(value);
+        if(StringUtils.equals(zone.getID(), value)) {
+            return FormValidation.ok();
+        }else {
             return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_TimeZoneError());
-    	}
+        }
     }
 
     @Override
