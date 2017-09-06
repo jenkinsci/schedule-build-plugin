@@ -143,8 +143,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
             }
         }
 
-        quietperiod = ddate.getTime() - now.getTime() + ScheduleBuildAction.securityMargin; // 120 sec security margin
-        if (quietperiod < 0) {
+        quietperiod = ddate.getTime() - now.getTime();
+        if (quietperiod + ScheduleBuildAction.securityMargin < 0) { // 120 sec security margin
             return HttpResponses.redirectTo("error");
         }
         return HttpResponses.forwardToView(this, "redirect");
