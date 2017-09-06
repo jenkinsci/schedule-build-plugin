@@ -45,7 +45,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
 
     private DateFormat getTimeFormat() {
-        return DateFormat.getTimeInstance(DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
+        return DateFormat.getTimeInstance(DateFormat.MEDIUM, Stapler.getCurrentRequest().getLocale());
     }
 
     public Date getDefaultScheduleTimeObject() {

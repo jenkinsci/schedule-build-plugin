@@ -156,7 +156,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     private DateFormat dateFormat() {
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Stapler.getCurrentRequest().getLocale());
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Stapler.getCurrentRequest().getLocale());
         df.setTimeZone(new ScheduleBuildGlobalConfiguration().getTimeZoneObject());
         return df;
     }
