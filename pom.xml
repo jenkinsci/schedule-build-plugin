@@ -40,6 +40,10 @@
     <tag>HEAD</tag>
   </scm>
 
+  <properties>
+    <java.level>8</java.level>
+  </properties>
+
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
