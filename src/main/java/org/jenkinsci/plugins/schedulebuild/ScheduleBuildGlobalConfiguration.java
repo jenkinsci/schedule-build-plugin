@@ -1,43 +1,47 @@
 package org.jenkinsci.plugins.schedulebuild;
 
+import hudson.Extension;
+import hudson.util.FormValidation;
+import jenkins.model.GlobalConfiguration;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.*;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-
-import hudson.Extension;
-import hudson.util.FormValidation;
-import jenkins.model.GlobalConfiguration;
-import jenkins.model.GlobalConfigurationCategory;
-import net.sf.json.JSONObject;
-
 @Extension
+@Symbol("scheduleBuild")
 public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     private Date defaultScheduleTime;
     private String timeZone;
 
+    @DataBoundConstructor
     public ScheduleBuildGlobalConfiguration() {
         this.defaultScheduleTime = new Date(0, 0, 0, 22, 0);
         this.timeZone = TimeZone.getDefault().getID();
         load();
     }
 
-    @Override
-    public GlobalConfigurationCategory getCategory() {
-        return new GlobalConfigurationCategory.Unclassified();
-    }
-
     public String getDefaultScheduleTime() {
         return getTimeFormat().format(this.defaultScheduleTime);
     }
 
+    @DataBoundSetter
+    public void setDefaultScheduleTime(String defaultScheduleTime) throws ParseException {
+        this.defaultScheduleTime = getTimeFormat().parse(defaultScheduleTime);
+    }
+
     public String getTimeZone() {
         return timeZone;
+    }
+
+    @DataBoundSetter
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
     public TimeZone getTimeZoneObject() {
@@ -72,6 +76,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+        // reset before data-binding
+        this.defaultScheduleTime = null;
+        this.timeZone = null;
         if (json.containsKey("defaultScheduleTime") && json.containsKey("timeZone")) {
             try {
                 this.defaultScheduleTime = getTimeFormat().parse(json.getString("defaultScheduleTime"));
