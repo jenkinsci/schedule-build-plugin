@@ -5,7 +5,7 @@
         <l:main-panel>
             <h1>${%Project} ${it.owner.name}</h1>
             <f:form name="schedule" action="next" method="post">
-                <f:entry title="${%BuildOn}:" field="date">
+                <f:entry title="${%BuildOn} (mm/dd/yy):" field="date">
                     <f:textbox value="${it.defaultDate}" checkUrl="'${rootURL}/${it.owner.url}schedule/checkDate?date=' + encodeURIComponent(this.value)" onKeyUp="this.onchange();"/>
                 </f:entry>
                 <f:entry>
