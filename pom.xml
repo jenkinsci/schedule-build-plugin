@@ -42,6 +42,7 @@
 
   <properties>
     <java.level>8</java.level>
+    <jenkins.version>2.289.1</jenkins.version>
   </properties>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
