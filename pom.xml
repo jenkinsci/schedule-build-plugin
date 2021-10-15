@@ -24,6 +24,11 @@
       <name>Martin Spielmann</name>
       <email>mail@martinspielmann.de</email>
     </developer>
+    <developer>
+      <id>MarkEWaite</id>
+      <name>Mark Waite</name>
+      <email>mark.earl.waite@gmail.com</email>
+    </developer>
   </developers>
   
   <licenses>
