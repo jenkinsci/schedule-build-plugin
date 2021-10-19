@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>schedule-build</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${revision}${changelist}</version>
   <name>Schedule Build Plugin</name>
   <packaging>hpi</packaging>
   <description>Adds capability to schedule a build for a later point in time</description>
@@ -39,13 +39,16 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/schedule-build-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/schedule-build-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/schedule-build-plugin</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
   <properties>
+    <revision>1.0.0</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/schedule-build-plugin</gitHubRepo>
     <java.level>8</java.level>
     <jenkins.version>2.289.1</jenkins.version>
   </properties>
