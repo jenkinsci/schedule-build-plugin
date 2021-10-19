@@ -48,6 +48,9 @@
   <properties>
     <java.level>8</java.level>
     <jenkins.version>2.289.1</jenkins.version>
+    <spotbugs.effort>Max</spotbugs.effort>
+    <spotbugs.failOnError>true</spotbugs.failOnError>
+    <spotbugs.threshold>Low</spotbugs.threshold>
   </properties>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
