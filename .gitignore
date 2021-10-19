@@ -9,3 +9,4 @@ nbactions-jenkins.xml
 /.factorypath
 /.idea
 /schedule-build.iml
+/nbproject/
