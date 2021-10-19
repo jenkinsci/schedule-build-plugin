@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: schedule-build-$NEXT_PATCH_VERSION
