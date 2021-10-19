@@ -10,7 +10,7 @@
   <version>${revision}${changelist}</version>
   <name>Schedule Build Plugin</name>
   <packaging>hpi</packaging>
-  <description>Adds capability to schedule a build for a later point in time</description>
+  <description>Schedule a build for a specific time</description>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Schedule+Build+Plugin</url>
   
   <developers>
