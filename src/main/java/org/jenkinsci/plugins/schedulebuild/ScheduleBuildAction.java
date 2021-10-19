@@ -44,7 +44,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     @Override
     public String getIconFileName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/images/schedule.png" : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/images/schedule.svg" : null;
     }
 
     @Override
