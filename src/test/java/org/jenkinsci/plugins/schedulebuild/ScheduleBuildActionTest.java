@@ -35,7 +35,7 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetIconFileName() {
-        assertThat(scheduleBuildAction.getIconFileName(), is("/plugin/schedule-build/images/schedule.png"));
+        assertThat(scheduleBuildAction.getIconFileName(), is("/plugin/schedule-build/images/schedule.svg"));
     }
 
     @Test
