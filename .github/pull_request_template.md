@@ -6,7 +6,7 @@ Describe the big picture of your changes here to explain to the maintainers why 
 
 _Put an `x` in the boxes that apply. Delete items that do not apply.  You can also fill these out after creating the PR. If you're unsure about any of them, don't hesitate to ask. This is simply a reminder of what we are going to look for before merging your code._
 
-- [ ] I have read the [CONTRIBUTING](https://github.com/jenkinsci/platformlabeler-plugin/blob/master/CONTRIBUTING.md) doc
+- [ ] I have read the [CONTRIBUTING](https://github.com/jenkinsci/schedule-build-plugin/blob/master/CONTRIBUTING.md) doc
 - [ ] I have referenced the Jira issue related to my changes in one or more commit messages
 - [ ] I have added tests that verify my changes
 - [ ] Unit tests pass locally with my changes
