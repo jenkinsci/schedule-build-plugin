@@ -68,7 +68,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public String getIconPath() {
-        Jenkins instance = Jenkins.getInstance();
+        Jenkins instance = Jenkins.getInstanceOrNull();
         if (instance != null) {
             String rootUrl = instance.getRootUrl();
 
