@@ -29,8 +29,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildAction.class.getName());
 
     private final Job<?, ?> target;
-    private final static long securityMargin = 120 * 1000;
-    private final static long oneDay = 24 * 3600 * 1000;
+    private final static long SECURITY_MARGIN = 120 * 1000;
+    private final static long ONE_DAY = 24 * 3600 * 1000;
 
     private long quietperiod;
 
@@ -68,7 +68,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public String getIconPath() {
-        Jenkins instance = Jenkins.getInstance();
+        Jenkins instance = Jenkins.getInstanceOrNull();
         if (instance != null) {
             String rootUrl = instance.getRootUrl();
 
@@ -96,7 +96,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         buildtime.setSeconds(defaultScheduleTime.getSeconds());
 
         if (now.getTime() > buildtime.getTime()) {
-            buildtime.setTime(buildtime.getTime() + ScheduleBuildAction.oneDay);
+            buildtime.setTime(buildtime.getTime() + ScheduleBuildAction.ONE_DAY);
         }
 
         return buildtime;
@@ -112,7 +112,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
         }
 
-        if (now.getTime() > ddate.getTime() + ScheduleBuildAction.securityMargin) {
+        if (now.getTime() > ddate.getTime() + ScheduleBuildAction.SECURITY_MARGIN) {
             return FormValidation.error(Messages.ScheduleBuildAction_DateInPastError());
         }
 
@@ -144,7 +144,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         }
 
         quietperiod = ddate.getTime() - now.getTime();
-        if (quietperiod + ScheduleBuildAction.securityMargin < 0) { // 120 sec security margin
+        if (quietperiod + ScheduleBuildAction.SECURITY_MARGIN < 0) { // 120 sec security margin
             return HttpResponses.redirectTo("error");
         }
         return HttpResponses.forwardToView(this, "redirect");
