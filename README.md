@@ -1,10 +1,10 @@
-# schedule-build-plugin
+# Schedule Build plugin
 
 Adds capability to schedule a build for a later point in time. Asks the
 user for a date and time and adds the build to the build queue with the
 respective quiet period.
 
-# Scheduling Builds
+## Scheduling Builds
 
 Press the "Schedule Build" link on the project page or use the schedule
 build action in the list view.
@@ -20,7 +20,7 @@ period.
 
 ![](docs/images/Schedule_Build_Queue.png)
 
-# Configure Schedule Build Plugin
+## Configure Schedule Build Plugin
 
 The configuration of the schedule build plugin is very simple. There are
 only two parameters on the Jenkins system configuration page.
@@ -31,7 +31,7 @@ the system time zone.
 
 ![](docs/images/Schedule_Timezone.png)
 
-# Configuration as code
+## Configuration as code
 
 This plugin supports configuration as code
 
