@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>schedule-build</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>1.0.0</version>
   <name>Schedule Build Plugin</name>
   <packaging>hpi</packaging>
   <description>Schedule a build for a specific time</description>
@@ -42,7 +42,7 @@
     <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
-    <tag>${scmTag}</tag>
+    <tag>schedule-build-1.0.0</tag>
   </scm>
 
   <properties>
