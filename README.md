@@ -29,8 +29,7 @@ The default time which is set when a user wants to schedule a build may
 be configured and time zone used by the plugin, which might differ from
 the system time zone.
 
-![](docs/images/Schedule_Timezone.png){width="527"
-height="115"}
+![](docs/images/Schedule_Timezone.png)
 
 # Configuration as code
 
