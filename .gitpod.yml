@@ -3,3 +3,4 @@ tasks:
     init: |
       cd ~/.m2/
       wget -O settings.xml https://www.planetpope.com/jenkins-mvn/settings.xml
+      cd $GITPOD_REPO_ROOT
