@@ -1,2 +1,4 @@
-image:
-  file: .gitpod.Dockerfile
+tasks:
+  - name: Update settings.xml
+    init: |
+      wget https://www.planetpope.com/jenkins-mvn-settings.xml -P /home/gitpod/.m2/
