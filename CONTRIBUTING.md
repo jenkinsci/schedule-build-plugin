@@ -21,6 +21,11 @@ Please don't introduce new spotbugs output.
 * `mvn spotbugs:check` to analyze project using [Spotbugs](https://spotbugs.github.io)
 * `mvn spotbugs:gui` to review report using GUI
 
+## File format
+
+Files in the repository are in Unix format (LF line terminators).
+Please continue using Unix file format for consistency.
+
 ## Reporting Issues
 
 Report issues in the [Jenkins issue tracker](https://www.jenkins.io/participate/report-issue/redirect/#18422).

@@ -7,9 +7,9 @@ var newRequest = function() {
 }
 
 var sumbitScheduleRequest = function(absoluteUrl, quietPeriodInSeconds, isJobParameterized){
-	
+
 	if(isJobParameterized){
-		// if job has parameters, redirect to build page, so user can set parameters 
+		// if job has parameters, redirect to build page, so user can set parameters
 		window.location = absoluteUrl + "build?delay=" + quietPeriodInSeconds + "sec";
 	}else{
 		// if job has NO parameters, submit build directly
@@ -22,8 +22,8 @@ var sumbitScheduleRequest = function(absoluteUrl, quietPeriodInSeconds, isJobPar
 				} else {
 					// csrf might be deactivated
 				}
-				
-				// do the actual submit 
+
+				// do the actual submit
 				var xmlhttp = newRequest();
 				xmlhttp.onreadystatechange = function() {
 					if (xmlhttp.readyState === 4) {
@@ -43,8 +43,8 @@ var sumbitScheduleRequest = function(absoluteUrl, quietPeriodInSeconds, isJobPar
 				xmlhttp.send();
 			}
 		};
-		
+
 		csrfRequest.open('GET', rootURL + '/crumbIssuer/api/json', false);
-		csrfRequest.send();	
+		csrfRequest.send();
 	}
 }
