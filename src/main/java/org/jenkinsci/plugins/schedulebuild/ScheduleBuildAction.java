@@ -15,6 +15,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import hudson.model.Action;
 import hudson.model.Job;
@@ -102,6 +103,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         return buildtime;
     }
 
+    @RequirePOST
     public FormValidation doCheckDate(@QueryParameter String date) {
         Date ddate, now = new Date();
         DateFormat dateFormat = dateFormat();
@@ -123,6 +125,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         return quietperiod / 1000;
     }
 
+    @RequirePOST
     public HttpResponse doNext(StaplerRequest req) throws FormException, ServletException, IOException {
         // Deprecated function StructureForm.get()
         // JSONObject param = StructuredForm.get(req);

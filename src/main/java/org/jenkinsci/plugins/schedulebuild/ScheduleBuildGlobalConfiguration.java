@@ -7,6 +7,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -56,6 +57,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         return new Date(this.defaultScheduleTime.getTime());
     }
 
+    @RequirePOST
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
         try {
             getTimeFormat().parse(value);
@@ -65,6 +67,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         return FormValidation.ok();
     }
 
+    @RequirePOST
     public FormValidation doCheckTimeZone(@QueryParameter String value) {
         TimeZone zone = TimeZone.getTimeZone(value);
         if(StringUtils.equals(zone.getID(), value)) {
