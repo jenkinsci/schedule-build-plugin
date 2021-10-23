@@ -7,7 +7,6 @@ tasks:
 vscode:
   extensions:
     - bierner.markdown-preview-github-styles
-    - bierner.github-markdown-preview
     - github.vscode-pull-request-github
     - redhat.java
     - redhat.vscode-commons
