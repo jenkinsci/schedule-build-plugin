@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.schedulebuild;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
@@ -59,6 +60,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @RequirePOST
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         try {
             getTimeFormat().parse(value);
         } catch (ParseException ex) {
@@ -69,6 +71,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @RequirePOST
     public FormValidation doCheckTimeZone(@QueryParameter String value) {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         TimeZone zone = TimeZone.getTimeZone(value);
         if(StringUtils.equals(zone.getID(), value)) {
             return FormValidation.ok();
