@@ -4,3 +4,16 @@ tasks:
       cd ~/.m2/
       wget -O settings.xml https://www.planetpope.com/jenkins-mvn/settings.xml
       cd $GITPOD_REPO_ROOT
+vscode:
+  extensions:
+    - bierner.markdown-preview-github-styles
+    - bierner.github-markdown-preview
+    - github.vscode-pull-request-github
+    - redhat.java
+    - redhat.vscode-commons
+    - redhat.vscode-xml
+    - vscjava.vscode-maven
+    - vscjava.vscode-java-debug
+    - vscjava.vscode-java-dependency
+    - vscjava.vscode-java-pack
+    - vscjava.vscode-java-test
