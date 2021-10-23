@@ -9,14 +9,17 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import hudson.model.Action;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Descriptor.FormException;
@@ -102,7 +105,12 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         return buildtime;
     }
 
-    public FormValidation doCheckDate(@QueryParameter String date) {
+    @RequirePOST
+    public FormValidation doCheckDate(@QueryParameter String date, @AncestorInPath Item item) {
+        if (item == null) {
+            return FormValidation.ok();
+        }
+        item.checkPermission(Item.CONFIGURE);
         Date ddate, now = new Date();
         DateFormat dateFormat = dateFormat();
         try {
@@ -123,7 +131,12 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         return quietperiod / 1000;
     }
 
-    public HttpResponse doNext(StaplerRequest req) throws FormException, ServletException, IOException {
+    @RequirePOST
+    public HttpResponse doNext(StaplerRequest req, @AncestorInPath Item item) throws FormException, ServletException, IOException {
+        if (item == null) {
+            return FormValidation.ok();
+        }
+        item.checkPermission(Item.CONFIGURE);
         // Deprecated function StructureForm.get()
         // JSONObject param = StructuredForm.get(req);
         JSONObject param = req.getSubmittedForm();
