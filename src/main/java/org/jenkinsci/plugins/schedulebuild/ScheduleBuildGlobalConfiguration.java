@@ -13,6 +13,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 @Extension
@@ -51,7 +52,10 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
 
     private DateFormat getTimeFormat() {
-        return DateFormat.getTimeInstance(DateFormat.MEDIUM, Stapler.getCurrentRequest().getLocale());
+        Locale locale = Stapler.getCurrentRequest() != null ?
+            Stapler.getCurrentRequest().getLocale() :
+            Locale.getDefault();
+        return DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
     }
 
     public Date getDefaultScheduleTimeObject() {
