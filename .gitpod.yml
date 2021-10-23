@@ -6,10 +6,7 @@ tasks:
       cd $GITPOD_REPO_ROOT
 vscode:
   extensions:
-    - bierner.markdown-checkbox
-    - bierner.markdown-emoji
     - bierner.markdown-preview-github-styles
-    - bierner.markdown-yaml-preamble
     - github.vscode-pull-request-github
     - redhat.java
     - redhat.vscode-commons
