@@ -3,6 +3,9 @@ tasks:
     before: |
       cp .mvn/settings.xml ~/.m2/settings.xml
       cd $GITPOD_REPO_ROOT
+  - name: sdkman auto answer
+    before: |
+      sed -i 's/sdkman_auto_answer=false/sdkman_auto_answer=true/' $HOME/.sdkman/etc/config
   - name: SDKMAN
     before: |
       sdk selfupdate
