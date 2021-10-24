@@ -3,14 +3,17 @@ package org.jenkinsci.plugins.schedulebuild;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 @Extension
@@ -49,14 +52,19 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
 
     private DateFormat getTimeFormat() {
-        return DateFormat.getTimeInstance(DateFormat.MEDIUM, Stapler.getCurrentRequest().getLocale());
+        Locale locale = Stapler.getCurrentRequest() != null ?
+            Stapler.getCurrentRequest().getLocale() :
+            Locale.getDefault();
+        return DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
     }
 
     public Date getDefaultScheduleTimeObject() {
         return new Date(this.defaultScheduleTime.getTime());
     }
 
+    @RequirePOST
     public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         try {
             getTimeFormat().parse(value);
         } catch (ParseException ex) {
@@ -65,7 +73,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         return FormValidation.ok();
     }
 
+    @RequirePOST
     public FormValidation doCheckTimeZone(@QueryParameter String value) {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         TimeZone zone = TimeZone.getTimeZone(value);
         if(StringUtils.equals(zone.getID(), value)) {
             return FormValidation.ok();
