@@ -1,9 +1,12 @@
 tasks:
   - name: Update settings.xml
     before: |
-      cd ~/.m2/
-      wget -O settings.xml https://www.planetpope.com/jenkins-mvn/settings.xml
+      cp .mvn/settings.xml ~/.m2/settings.xml
       cd $GITPOD_REPO_ROOT
+  - name: selfupdate SDKMAN
+    before: sdk selfupdate
+  - name: select Maven 3.8.3
+    before: sdk use maven 3.8.3
 vscode:
   extensions:
     - bierner.markdown-preview-github-styles
