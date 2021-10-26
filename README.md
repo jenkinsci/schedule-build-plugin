@@ -39,8 +39,6 @@ Add to your yaml file:
 ```yaml
 unclassified:
   scheduleBuild:
-    # defaultScheduleTime is not currently supported in JCasC
-    # See JENKINS-66939 for more details
-    # defaultScheduleTime: "11:00:00 PM"
+    defaultScheduleTime: "11:00:00 PM"
     timeZone: "Europe/Paris"
 ```
