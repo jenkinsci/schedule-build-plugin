@@ -13,6 +13,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.assertThrows;
 
 public class ScheduleBuildGlobalConfigurationTest {
 
@@ -60,6 +61,23 @@ public class ScheduleBuildGlobalConfigurationTest {
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultScheduleTime(), is(newScheduleTime));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
+    }
+
+    @Test
+    public void testBadScheduleTime() throws Exception {
+        assertThrows(java.text.ParseException.class,
+                     () -> {
+                         globalConfig.setDefaultScheduleTime("34:56:78");
+                     });
+    }
+
+    @Test
+    public void testDoCheckTimeZone() throws Exception {
+        globalConfig.setTimeZone("invalid time zone");
+        TimeZone timeZoneBefore = globalConfig.getTimeZoneObject();
+        globalConfig.setTimeZone("Another invalid time zone");
+        TimeZone timeZoneAfter = globalConfig.getTimeZoneObject();
+        assertThat(timeZoneBefore, is(timeZoneAfter));
     }
 
     @Test
