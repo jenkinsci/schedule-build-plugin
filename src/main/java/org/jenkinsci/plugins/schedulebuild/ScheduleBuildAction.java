@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -169,7 +170,10 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     private DateFormat dateFormat() {
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Stapler.getCurrentRequest().getLocale());
+        Locale locale = Stapler.getCurrentRequest() != null ?
+            Stapler.getCurrentRequest().getLocale() :
+            Locale.getDefault();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
         df.setTimeZone(new ScheduleBuildGlobalConfiguration().getTimeZoneObject());
         return df;
     }

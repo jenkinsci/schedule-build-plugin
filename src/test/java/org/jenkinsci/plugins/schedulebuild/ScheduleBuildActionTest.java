@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import hudson.model.FreeStyleProject;
 import java.io.IOException;
+import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Rule;
@@ -10,7 +11,9 @@ import org.jvnet.hudson.test.JenkinsRule;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ScheduleBuildActionTest {
 
@@ -34,13 +37,17 @@ public class ScheduleBuildActionTest {
     }
 
     @Test
-    public void testGetIconFileName() {
+    public void testGetIconFileName() throws Exception {
         assertThat(scheduleBuildAction.getIconFileName(), is("/plugin/schedule-build/images/schedule.svg"));
+        project.disable();
+        assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
     }
 
     @Test
-    public void testGetDisplayName() {
+    public void testGetDisplayName() throws Exception {
         assertThat(scheduleBuildAction.getDisplayName(), is("Schedule Build"));
+        project.disable();
+        assertThat(scheduleBuildAction.getDisplayName(), is(nullValue()));
     }
 
     @Test
@@ -66,5 +73,22 @@ public class ScheduleBuildActionTest {
     @Test
     public void testIsJobParameterized() {
         assertFalse(scheduleBuildAction.isJobParameterized());
+    }
+
+    @Test
+    public void testSchedule() throws Exception {
+        assertTrue(scheduleBuildAction.schedule(null, null));
+    }
+
+    @Test
+    public void testGetDefaultDate() throws Exception {
+        assertThat(scheduleBuildAction.getDefaultDate(), endsWith(" 10:00:00 PM"));
+    }
+
+    @Test
+    public void testGetDefaultDateObject() throws Exception {
+        Date now = new Date();
+        Date defaultDate = scheduleBuildAction.getDefaultDateObject();
+        assertThat("Default build date is not after current time", defaultDate.after(now));
     }
 }
