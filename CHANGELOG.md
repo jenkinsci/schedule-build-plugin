@@ -18,4 +18,4 @@
     [JENKINS-38686](https://issues.jenkins-ci.org/browse/JENKINS-38686)
 -   Fix GET trigger link error
     [JENKINS-28961](https://issues.jenkins-ci.org/browse/JENKINS-28961)
-    (thanks [phippu](https://github.com/phippu) for the PR)  
+    (thanks [phippu](https://github.com/phippu) for the PR)
