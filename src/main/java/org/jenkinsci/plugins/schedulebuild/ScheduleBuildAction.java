@@ -111,7 +111,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         if (item == null) {
             return FormValidation.ok();
         }
-        item.checkPermission(Item.CONFIGURE);
+        // User requesting a build needs permission to start the build
+        item.checkPermission(Item.BUILD);
         Date ddate, now = new Date();
         DateFormat dateFormat = dateFormat();
         try {
@@ -137,7 +138,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
         if (item == null) {
             return FormValidation.ok();
         }
-        item.checkPermission(Item.CONFIGURE);
+        // User requesting a build needs permission to start the build
+        item.checkPermission(Item.BUILD);
         // Deprecated function StructureForm.get()
         // JSONObject param = StructuredForm.get(req);
         JSONObject param = req.getSubmittedForm();
