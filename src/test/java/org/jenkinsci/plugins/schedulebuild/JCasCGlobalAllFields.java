@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.schedulebuild;
 
 import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
-import java.util.TimeZone;
 import jenkins.model.GlobalConfiguration;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
 
