@@ -92,6 +92,12 @@
               <endWithNewline></endWithNewline>
               <removeUnusedImports></removeUnusedImports>
             </java>
+            <pom>
+              <indent>
+                <spaces>true</spaces>
+              </indent>
+              <sortPom></sortPom>
+            </pom>
           </configuration>
           <executions>
             <execution>
