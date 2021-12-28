@@ -13,6 +13,7 @@
   <packaging>hpi</packaging>
   <description>Schedule a build for a specific time</description>
   <url>https://github.com/jenkinsci/schedule-build-plugin</url>
+  <inceptionYear>2014</inceptionYear>
   
   <developers>
     <developer>
