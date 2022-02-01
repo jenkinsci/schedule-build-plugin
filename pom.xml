@@ -52,7 +52,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/schedule-build-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <jenkins.version>2.289.1</jenkins.version>
+    <jenkins.version>2.303.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.failOnError>true</spotbugs.failOnError>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -62,8 +62,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.289.x</artifactId>
-        <version>1117.v62a_f6a_01de98</version>
+        <artifactId>bom-2.303.x</artifactId>
+        <version>1135.va_4eeca_ea_21c1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
