@@ -12,7 +12,6 @@
   <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Schedule Build Plugin</name>
-  <description>Schedule a build for a specific time</description>
   <url>https://github.com/jenkinsci/schedule-build-plugin</url>
   <inceptionYear>2014</inceptionYear>
 
@@ -52,7 +51,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/schedule-build-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <jenkins.version>2.303.3</jenkins.version>
+    <jenkins.version>2.319.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.failOnError>true</spotbugs.failOnError>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -62,7 +61,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.303.x</artifactId>
+        <artifactId>bom-2.319.x</artifactId>
         <version>1210.vcd41f6657f03</version>
         <type>pom</type>
         <scope>import</scope>
