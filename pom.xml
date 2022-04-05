@@ -50,7 +50,6 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/schedule-build-plugin</gitHubRepo>
-    <java.level>8</java.level>
     <jenkins.version>2.319.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.failOnError>true</spotbugs.failOnError>
