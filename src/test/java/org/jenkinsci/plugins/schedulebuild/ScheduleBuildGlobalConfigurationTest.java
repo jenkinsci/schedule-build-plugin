@@ -1,32 +1,29 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.TimeZone;
-
-import jenkins.model.GlobalConfiguration;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Rule;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.Assert.assertThrows;
 
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.TimeZone;
+import jenkins.model.GlobalConfiguration;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
 public class ScheduleBuildGlobalConfigurationTest {
 
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
+    @Rule public final JenkinsRule j = new JenkinsRule();
     private ScheduleBuildGlobalConfiguration globalConfig = null;
 
-    public ScheduleBuildGlobalConfigurationTest() {
-    }
+    public ScheduleBuildGlobalConfigurationTest() {}
 
     @Before
     public void setUp() {
-        globalConfig = GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        globalConfig =
+                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
     }
 
     @Test
@@ -39,7 +36,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         j.configRoundtrip();
 
         ScheduleBuildGlobalConfiguration newGlobalConfig =
-            GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultScheduleTime(), is("10:00:00 PM"));
         assertThat(newGlobalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
@@ -57,7 +54,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         j.configRoundtrip();
 
         ScheduleBuildGlobalConfiguration newGlobalConfig =
-            GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultScheduleTime(), is(newScheduleTime));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
@@ -65,10 +62,11 @@ public class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     public void testBadScheduleTime() throws Exception {
-        assertThrows(java.text.ParseException.class,
-                     () -> {
-                         globalConfig.setDefaultScheduleTime("34:56:78");
-                     });
+        assertThrows(
+                java.text.ParseException.class,
+                () -> {
+                    globalConfig.setDefaultScheduleTime("34:56:78");
+                });
     }
 
     @Test

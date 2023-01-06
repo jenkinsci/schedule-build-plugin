@@ -6,8 +6,7 @@ import org.jvnet.hudson.test.RestartableJenkinsRule;
 public class JCasCGlobalConfigurationTest extends RoundTripAbstractTest {
 
     @Override
-    protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {
-    }
+    protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {}
 
     @Override
     protected String stringInLogExpected() {

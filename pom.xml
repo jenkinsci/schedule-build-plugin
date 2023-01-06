@@ -5,7 +5,7 @@
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
     <version>4.53</version>
-    <relativePath></relativePath>
+    <relativePath />
   </parent>
 
   <artifactId>schedule-build</artifactId>
@@ -102,14 +102,31 @@
             <!-- define a language-specific format -->
             <java>
               <!-- no need to specify files, inferred automatically -->
-              <endWithNewline></endWithNewline>
-              <removeUnusedImports></removeUnusedImports>
+              <!-- apply a specific flavor of google-java-format -->
+              <googleJavaFormat>
+                <version>1.15.0</version>
+                <style>AOSP</style>
+              </googleJavaFormat>
+              <endWithNewline />
+              <removeUnusedImports />
             </java>
             <pom>
               <indent>
                 <spaces>true</spaces>
               </indent>
-              <sortPom></sortPom>
+              <includes>
+                <include>pom.xml</include>
+              </includes>
+              <sortPom>
+                <expandEmptyElements>false</expandEmptyElements>
+                <sortDependencies>groupId,artifactId</sortDependencies>
+                <sortDependencyExclusions>groupId,artifactId</sortDependencyExclusions>
+                <sortExecutions>true</sortExecutions>
+                <sortModules>true</sortModules>
+                <sortPlugins>groupId,artifactId</sortPlugins>
+                <sortProperties>true</sortProperties>
+                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+              </sortPom>
             </pom>
           </configuration>
           <executions>

@@ -1,5 +1,11 @@
 package org.jenkinsci.plugins.schedulebuild;
 
+import hudson.model.Action;
+import hudson.model.Descriptor.FormException;
+import hudson.model.Item;
+import hudson.model.Job;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.util.FormValidation;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -7,9 +13,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
-
+import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
@@ -19,22 +25,13 @@ import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
-import hudson.model.Action;
-import hudson.model.Item;
-import hudson.model.Job;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.Descriptor.FormException;
-import hudson.util.FormValidation;
-import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
-
 public class ScheduleBuildAction implements Action, StaplerProxy {
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildAction.class.getName());
 
     private final Job<?, ?> target;
-    private final static long SECURITY_MARGIN = 120 * 1000;
-    private final static long ONE_DAY = 24 * 3600 * 1000;
+    private static final long SECURITY_MARGIN = 120 * 1000;
+    private static final long ONE_DAY = 24 * 3600 * 1000;
 
     private long quietperiod;
 
@@ -48,12 +45,16 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     @Override
     public String getIconFileName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? "/plugin/schedule-build/images/schedule.svg" : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable()
+                ? "/plugin/schedule-build/images/schedule.svg"
+                : null;
     }
 
     @Override
     public String getDisplayName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable() ? Messages.ScheduleBuildAction_DisplayName() : null;
+        return target.hasPermission(Job.BUILD) && this.target.isBuildable()
+                ? Messages.ScheduleBuildAction_DisplayName()
+                : null;
     }
 
     @Override
@@ -88,7 +89,10 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public Date getDefaultDateObject() {
-        Date buildtime = new Date(), now = new Date(), defaultScheduleTime = new ScheduleBuildGlobalConfiguration().getDefaultScheduleTimeObject();
+        Date buildtime = new Date(),
+                now = new Date(),
+                defaultScheduleTime =
+                        new ScheduleBuildGlobalConfiguration().getDefaultScheduleTimeObject();
         DateFormat dateFormat = dateFormat();
         try {
             now = dateFormat.parse(dateFormat.format(now));
@@ -134,7 +138,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     @RequirePOST
-    public HttpResponse doNext(StaplerRequest req, @AncestorInPath Item item) throws FormException, ServletException, IOException {
+    public HttpResponse doNext(StaplerRequest req, @AncestorInPath Item item)
+            throws FormException, ServletException, IOException {
         if (item == null) {
             return FormValidation.ok();
         }
@@ -167,14 +172,18 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
     }
 
     public boolean isJobParameterized() {
-        ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
-        return paramDefinitions != null && paramDefinitions.getParameterDefinitions() != null && paramDefinitions.getParameterDefinitions().size() > 0;
+        ParametersDefinitionProperty paramDefinitions =
+                target.getProperty(ParametersDefinitionProperty.class);
+        return paramDefinitions != null
+                && paramDefinitions.getParameterDefinitions() != null
+                && paramDefinitions.getParameterDefinitions().size() > 0;
     }
 
     private DateFormat dateFormat() {
-        Locale locale = Stapler.getCurrentRequest() != null ?
-            Stapler.getCurrentRequest().getLocale() :
-            Locale.getDefault();
+        Locale locale =
+                Stapler.getCurrentRequest() != null
+                        ? Stapler.getCurrentRequest().getLocale()
+                        : Locale.getDefault();
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
         df.setTimeZone(new ScheduleBuildGlobalConfiguration().getTimeZoneObject());
         return df;
