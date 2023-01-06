@@ -1,13 +1,5 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import hudson.model.FreeStyleProject;
-import java.io.IOException;
-import java.util.Date;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Rule;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
@@ -15,15 +7,21 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import hudson.model.FreeStyleProject;
+import java.io.IOException;
+import java.util.Date;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
 public class ScheduleBuildActionTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    @Rule public JenkinsRule j = new JenkinsRule();
     private ScheduleBuildAction scheduleBuildAction;
     private FreeStyleProject project;
 
-    public ScheduleBuildActionTest() {
-    }
+    public ScheduleBuildActionTest() {}
 
     @Before
     public void setUp() throws IOException {
@@ -38,7 +36,9 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetIconFileName() throws Exception {
-        assertThat(scheduleBuildAction.getIconFileName(), is("/plugin/schedule-build/images/schedule.svg"));
+        assertThat(
+                scheduleBuildAction.getIconFileName(),
+                is("/plugin/schedule-build/images/schedule.svg"));
         project.disable();
         assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
     }

@@ -1,12 +1,11 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import org.kohsuke.stapler.StaplerRequest;
-
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 
 public class ScheduleBuildButtonColumn extends ListViewColumn {
     public static final class DescriptorImpl extends ListViewColumnDescriptor {
@@ -16,7 +15,8 @@ public class ScheduleBuildButtonColumn extends ListViewColumn {
         }
 
         @Override
-        public ListViewColumn newInstance(final StaplerRequest request, final JSONObject formData) throws FormException {
+        public ListViewColumn newInstance(final StaplerRequest request, final JSONObject formData)
+                throws FormException {
             return new ScheduleBuildButtonColumn();
         }
 
@@ -26,12 +26,10 @@ public class ScheduleBuildButtonColumn extends ListViewColumn {
         }
     }
 
-    @Extension
-    public static final Descriptor<ListViewColumn> DESCRIPTOR = new DescriptorImpl();
+    @Extension public static final Descriptor<ListViewColumn> DESCRIPTOR = new DescriptorImpl();
 
     @Override
     public Descriptor<ListViewColumn> getDescriptor() {
         return DESCRIPTOR;
     }
-
 }
