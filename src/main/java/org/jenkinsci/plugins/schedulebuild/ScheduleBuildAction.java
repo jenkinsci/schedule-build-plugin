@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkins.ui.icon.IconSpec;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
@@ -25,7 +26,7 @@ import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
-public class ScheduleBuildAction implements Action, StaplerProxy {
+public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildAction.class.getName());
 
@@ -45,8 +46,13 @@ public class ScheduleBuildAction implements Action, StaplerProxy {
 
     @Override
     public String getIconFileName() {
+        return null;
+    }
+
+    @Override
+    public String getIconClassName() {
         return target.hasPermission(Job.BUILD) && this.target.isBuildable()
-                ? "/plugin/schedule-build/images/schedule.svg"
+                ? "symbol-calendar-outline plugin-ionicons-api"
                 : null;
     }
 
