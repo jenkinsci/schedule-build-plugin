@@ -1,11 +1,12 @@
 <?jelly escape-by-default='true'?>
-<!-- TODO add taglibs such as: xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" -->
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:i="jelly:fmt">
-    <td>
-     <j:if test="${job.buildable and job.hasPermission(job.BUILD)}">
-      <a href="job/${job.name}/schedule" title="${%ScheduleBuildColumn.Title}">
-        <img alt="${%ScheduleBuildColumn.Title}" src="${rootURL}/plugin/schedule-build/images/schedule.svg" style="width: 24px; height: 24px; " title="${%ScheduleBuildColumn.Title}" />
-      </a>
-    </j:if>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <td class="jenkins-table__cell--tight">
+        <j:if test="${job.buildable and job.hasPermission(job.BUILD)}">
+             <div class="jenkins-table__cell__button-wrapper">
+                 <a href="job/${job.name}/schedule" tooltip="${%ScheduleBuildColumn.Title}" class="jenkins-table__button">
+                     <l:icon src="symbol-calendar-outline plugin-ionicons-api" />
+                 </a>
+             </div>
+        </j:if>
     </td>
 </j:jelly>

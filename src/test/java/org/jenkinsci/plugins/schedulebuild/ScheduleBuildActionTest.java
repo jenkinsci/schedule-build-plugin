@@ -36,11 +36,18 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetIconFileName() throws Exception {
-        assertThat(
-                scheduleBuildAction.getIconFileName(),
-                is("/plugin/schedule-build/images/schedule.svg"));
+        assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
         project.disable();
         assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
+    }
+
+    @Test
+    public void testGetIconClassName() throws Exception {
+        assertThat(
+                scheduleBuildAction.getIconClassName(),
+                is("symbol-calendar-outline plugin-ionicons-api"));
+        project.disable();
+        assertThat(scheduleBuildAction.getIconClassName(), is(nullValue()));
     }
 
     @Test
