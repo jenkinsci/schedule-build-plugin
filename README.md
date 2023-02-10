@@ -6,15 +6,18 @@ respective quiet period.
 
 ## Scheduling Builds
 
-Press the "Schedule Build" link on the project page or use the schedule
-build action in the list view.
+Press the "Schedule Build" link on the project page
 
 ![](docs/images/Schedule_Project_Page.png)
 
+or use the schedule build action in the list view.
+
 ![](docs/images/Schedule_Action.png)  
+
 Then select date and time when to schedule the build.
 
 ![](docs/images/Schedule_Page.png)  
+
 The build will be added to the build queue with the respective quiet
 period.
 
