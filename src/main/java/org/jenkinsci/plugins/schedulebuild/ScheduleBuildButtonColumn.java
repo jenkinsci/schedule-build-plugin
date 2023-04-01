@@ -26,7 +26,8 @@ public class ScheduleBuildButtonColumn extends ListViewColumn {
         }
     }
 
-    @Extension public static final Descriptor<ListViewColumn> DESCRIPTOR = new DescriptorImpl();
+    @Extension
+    public static final Descriptor<ListViewColumn> DESCRIPTOR = new DescriptorImpl();
 
     @Override
     public Descriptor<ListViewColumn> getDescriptor() {

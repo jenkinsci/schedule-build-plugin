@@ -15,15 +15,16 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 public class ScheduleBuildGlobalConfigurationTest {
 
-    @Rule public final JenkinsRule j = new JenkinsRule();
+    @Rule
+    public final JenkinsRule j = new JenkinsRule();
+
     private ScheduleBuildGlobalConfiguration globalConfig = null;
 
     public ScheduleBuildGlobalConfigurationTest() {}
 
     @Before
     public void setUp() {
-        globalConfig =
-                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        globalConfig = GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
     }
 
     @Test
@@ -62,11 +63,9 @@ public class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     public void testBadScheduleTime() throws Exception {
-        assertThrows(
-                java.text.ParseException.class,
-                () -> {
-                    globalConfig.setDefaultScheduleTime("34:56:78");
-                });
+        assertThrows(java.text.ParseException.class, () -> {
+            globalConfig.setDefaultScheduleTime("34:56:78");
+        });
     }
 
     @Test

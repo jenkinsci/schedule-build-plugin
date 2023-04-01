@@ -97,8 +97,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     public Date getDefaultDateObject() {
         Date buildtime = new Date(),
                 now = new Date(),
-                defaultScheduleTime =
-                        new ScheduleBuildGlobalConfiguration().getDefaultScheduleTimeObject();
+                defaultScheduleTime = new ScheduleBuildGlobalConfiguration().getDefaultScheduleTimeObject();
         DateFormat dateFormat = dateFormat();
         try {
             now = dateFormat.parse(dateFormat.format(now));
@@ -178,18 +177,16 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     public boolean isJobParameterized() {
-        ParametersDefinitionProperty paramDefinitions =
-                target.getProperty(ParametersDefinitionProperty.class);
+        ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
         return paramDefinitions != null
                 && paramDefinitions.getParameterDefinitions() != null
                 && paramDefinitions.getParameterDefinitions().size() > 0;
     }
 
     private DateFormat dateFormat() {
-        Locale locale =
-                Stapler.getCurrentRequest() != null
-                        ? Stapler.getCurrentRequest().getLocale()
-                        : Locale.getDefault();
+        Locale locale = Stapler.getCurrentRequest() != null
+                ? Stapler.getCurrentRequest().getLocale()
+                : Locale.getDefault();
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
         df.setTimeZone(new ScheduleBuildGlobalConfiguration().getTimeZoneObject());
         return df;
