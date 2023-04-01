@@ -17,7 +17,9 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 public class ScheduleBuildActionTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
+
     private ScheduleBuildAction scheduleBuildAction;
     private FreeStyleProject project;
 
@@ -43,9 +45,7 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetIconClassName() throws Exception {
-        assertThat(
-                scheduleBuildAction.getIconClassName(),
-                is("symbol-calendar-outline plugin-ionicons-api"));
+        assertThat(scheduleBuildAction.getIconClassName(), is("symbol-calendar-outline plugin-ionicons-api"));
         project.disable();
         assertThat(scheduleBuildAction.getIconClassName(), is(nullValue()));
     }
