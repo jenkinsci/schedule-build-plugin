@@ -25,19 +25,28 @@
 
   <developers>
     <developer>
+      <id>markewaite</id>
+      <name>Mark Waite</name>
+      <email>mark.earl.waite@gmail.com</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
       <id>anderl86</id>
       <name>Andreas K</name>
       <email>anderl86@hotmail.com</email>
+      <roles>
+        <role>emeritus</role>
+      </roles>
     </developer>
     <developer>
       <id>pingunaut</id>
       <name>Martin Spielmann</name>
       <email>mail@martinspielmann.de</email>
-    </developer>
-    <developer>
-      <id>MarkEWaite</id>
-      <name>Mark Waite</name>
-      <email>mark.earl.waite@gmail.com</email>
+      <roles>
+        <role>emeritus</role>
+      </roles>
     </developer>
   </developers>
 
