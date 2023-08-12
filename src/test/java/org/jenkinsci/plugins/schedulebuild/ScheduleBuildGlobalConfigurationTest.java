@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThrows;
 
 import java.time.ZoneId;
@@ -30,7 +31,7 @@ public class ScheduleBuildGlobalConfigurationTest {
     @Test
     public void configRoundTripTestNoChanges() throws Exception {
         assertThat(globalConfig, is(not(nullValue())));
-        assertThat(globalConfig.getDefaultScheduleTime(), is("10:00:00 PM"));
+        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
         assertThat(globalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
 
         // Submit the global configuration page with no changes
@@ -39,7 +40,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         ScheduleBuildGlobalConfiguration newGlobalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
-        assertThat(newGlobalConfig.getDefaultScheduleTime(), is("10:00:00 PM"));
+        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
         assertThat(newGlobalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
     }
 
@@ -57,7 +58,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         ScheduleBuildGlobalConfiguration newGlobalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
-        assertThat(newGlobalConfig.getDefaultScheduleTime(), is(newScheduleTime));
+        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("1:23:45\\hPM"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
     }
 
@@ -79,14 +80,14 @@ public class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     public void testGetDefaultScheduleTime() {
-        assertThat(globalConfig.getDefaultScheduleTime(), is("10:00:00 PM"));
+        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
     }
 
     @Test
     public void testSetDefaultScheduleTime() throws Exception {
         String defaultScheduleTime = "12:34:56 PM";
         globalConfig.setDefaultScheduleTime(defaultScheduleTime);
-        assertThat(globalConfig.getDefaultScheduleTime(), is(defaultScheduleTime));
+        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("12:34:56\\hPM"));
     }
 
     @Test

@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.schedulebuild;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -89,7 +90,7 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetDefaultDate() throws Exception {
-        assertThat(scheduleBuildAction.getDefaultDate(), endsWith(" 10:00:00 PM"));
+        assertThat(scheduleBuildAction.getDefaultDate(), matchesPattern(".* 10:00:00\\hPM"));
     }
 
     @Test
