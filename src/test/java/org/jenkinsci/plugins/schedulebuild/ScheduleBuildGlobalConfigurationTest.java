@@ -63,6 +63,24 @@ public class ScheduleBuildGlobalConfigurationTest {
     }
 
     @Test
+    public void configRoundTripTestWithChangesSimpleTime() throws Exception {
+        // Adjust global configuration values
+        String newScheduleTime = "2:34";
+        String newTimeZone = "Europe/Rome";
+        globalConfig.setDefaultScheduleTime(newScheduleTime);
+        globalConfig.setTimeZone(newTimeZone);
+
+        // Submit the global configuration page, will not change adjusted values
+        j.configRoundtrip();
+
+        ScheduleBuildGlobalConfiguration newGlobalConfig =
+                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        assertThat(newGlobalConfig, is(not(nullValue())));
+        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("2:34:00\\hAM"));
+        assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
+    }
+
+    @Test
     public void testBadScheduleTime() throws Exception {
         assertThrows(java.text.ParseException.class, () -> {
             globalConfig.setDefaultScheduleTime("34:56:78");
