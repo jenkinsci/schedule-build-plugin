@@ -4,9 +4,17 @@ import hudson.Extension;
 import hudson.util.FormValidation;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -18,8 +26,22 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Extension
 @Symbol("scheduleBuild")
 public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
+    // defaultScheduleTime is a misuse of a Date object.  Used for the
+    // time portion (hours, minutes, seconds, etc.) while the date
+    // portion is ignored.
     private Date defaultScheduleTime;
     private String timeZone;
+
+    private static final Logger LOGGER = Logger.getLogger(ScheduleBuildGlobalConfiguration.class.getName());
+
+    private static final LocalDate EPOCH = LocalDate.of(1970, 1, 1);
+    private static final ZoneId ZONE = ZoneId.systemDefault();
+    private static final DateTimeFormatter[] FORMATTERS = {
+        DateTimeFormatter.ofPattern("h:m:s a"), // Original format required by DateFormat
+        DateTimeFormatter.ofPattern("h:m:s"),
+        DateTimeFormatter.ofPattern("h:m a"),
+        DateTimeFormatter.ofPattern("h:m"),
+    };
 
     @DataBoundConstructor
     public ScheduleBuildGlobalConfiguration() {
@@ -34,7 +56,28 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @DataBoundSetter
     public void setDefaultScheduleTime(String defaultScheduleTime) throws ParseException {
-        this.defaultScheduleTime = getTimeFormat().parse(defaultScheduleTime);
+        try {
+            this.defaultScheduleTime = getTimeFormat().parse(defaultScheduleTime);
+        } catch (ParseException parseException) {
+            /* Try each of the formatters with the user provided data, return first success */
+            /* Java 21 changed DateFormat to not accept strings with only a time component */
+            /* DateTimeFormatter parsing allows Java 11, 17, and 21 to accept several time string formats */
+            for (DateTimeFormatter formatter : FORMATTERS) {
+                try {
+                    LocalTime localTime = LocalTime.parse(defaultScheduleTime, formatter);
+                    Instant instant = localTime.atDate(EPOCH).atZone(ZONE).toInstant();
+                    this.defaultScheduleTime = Date.from(instant);
+                    return;
+                } catch (DateTimeParseException dtex) {
+                    LOGGER.log(
+                            Level.FINE,
+                            "Did not parse '" + defaultScheduleTime + "' with formatter " + formatter,
+                            dtex);
+                }
+            }
+            /* Throw the original exception if no match is found */
+            throw parseException;
+        }
     }
 
     public String getTimeZone() {
