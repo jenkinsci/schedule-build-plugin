@@ -37,9 +37,13 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     private static final LocalDate EPOCH = LocalDate.of(1970, 1, 1);
     private static final ZoneId ZONE = ZoneId.systemDefault();
     private static final DateTimeFormatter[] FORMATTERS = {
-        DateTimeFormatter.ofPattern("h:m:s a"), // Original format required by DateFormat
-        DateTimeFormatter.ofPattern("h:m:s"),
+        DateTimeFormatter.ofPattern("H:m:s a"), // Original format required by DateFormat
+        DateTimeFormatter.ofPattern("h:m:s a"),
+        DateTimeFormatter.ofPattern("H:m a"),
         DateTimeFormatter.ofPattern("h:m a"),
+        DateTimeFormatter.ofPattern("H:m:s"),
+        DateTimeFormatter.ofPattern("h:m:s"),
+        DateTimeFormatter.ofPattern("H:m"),
         DateTimeFormatter.ofPattern("h:m"),
     };
 
@@ -67,6 +71,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
                     LocalTime localTime = LocalTime.parse(defaultScheduleTime, formatter);
                     Instant instant = localTime.atDate(EPOCH).atZone(ZONE).toInstant();
                     this.defaultScheduleTime = Date.from(instant);
+                    // LOGGER.log(Level.FINEST, "Parsed '" + defaultScheduleTime + "' with formatter " + formatter);
                     return;
                 } catch (DateTimeParseException dtex) {
                     LOGGER.log(
