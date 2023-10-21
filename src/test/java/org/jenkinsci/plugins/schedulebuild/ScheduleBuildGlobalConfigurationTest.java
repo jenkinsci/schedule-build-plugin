@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.schedulebuild;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThrows;
 
