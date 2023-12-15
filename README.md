@@ -45,3 +45,12 @@ unclassified:
     defaultScheduleTime: "11:00:00 PM"
     timeZone: "Europe/Paris"
 ```
+
+## Release Notes
+
+* For recent versions, see [GitHub Releases](https://github.com/jenkinsci/schedule-build-plugin/releases)
+* For versions 0.5.0 and older, see the [changelog archive](https://github.com/jenkinsci/schedule-build-plugin/blob/schedule-build-1.0.0/CHANGELOG.md)
+
+## Report an Issue
+
+Please report issues and enhancements through the [Jenkins issue tracker](https://www.jenkins.io/participate/report-issue/redirect/#18422).
