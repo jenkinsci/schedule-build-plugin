@@ -3,7 +3,8 @@
     <td class="jenkins-table__cell--tight">
         <j:if test="${job.buildable and job.hasPermission(job.BUILD)}">
              <div class="jenkins-table__cell__button-wrapper">
-                 <a href="job/${job.name}/schedule" tooltip="${%ScheduleBuildColumn.Title}" class="jenkins-table__button">
+                 <j:set var="href" value="${jobBaseUrl}${job.shortUrl}schedule"/>
+                 <a href="${href}" tooltip="${%ScheduleBuildColumn.Title}" class="jenkins-table__button">
                      <l:icon src="symbol-calendar-outline plugin-ionicons-api" />
                  </a>
              </div>
