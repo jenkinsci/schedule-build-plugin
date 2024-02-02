@@ -6,12 +6,13 @@
             <h1>${%Project} ${it.owner.name}</h1>
             <f:form name="schedule" action="next" method="post">
                 <f:entry title="${%BuildOn} (mm/dd/yy):" field="date">
-                    <f:textbox value="${it.defaultDate}" checkUrl="'${rootURL}/${it.owner.url}schedule/checkDate?date=' + encodeURIComponent(this.value)" onKeyUp="this.onchange();"/>
+                    <f:textbox id="schedule-build-input" value="${it.defaultDate}" checkUrl="${rootURL}/${it.owner.url}schedule/checkDate" checkDependsOn=""/>
                 </f:entry>
                 <f:entry>
-                    <f:submit value="${%Schedule}"/>
+                    <f:submit value="${%Schedule}" id="schedule-build-button"/>
                 </f:entry>
             </f:form>
+            <script src="${rootURL}/plugin/schedule-build/scheduleBuild.js"/>
         </l:main-panel>
     </l:layout>
 </j:jelly>
