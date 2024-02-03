@@ -2,12 +2,16 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
@@ -29,33 +33,58 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     // defaultScheduleTime is a misuse of a Date object.  Used for the
     // time portion (hours, minutes, seconds, etc.) while the date
     // portion is ignored.
-    private Date defaultScheduleTime;
+    private transient Date defaultScheduleTime;
     private String timeZone;
+
+    private String defaultStartTime;
+
+    private transient LocalTime defaultScheduleLocalTime;
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildGlobalConfiguration.class.getName());
 
+    private static final String TIME_PATTERN = "HH:mm:ss";
+
     private static final LocalDate EPOCH = LocalDate.of(1970, 1, 1);
-    private static final ZoneId ZONE = ZoneId.systemDefault();
+    private static final ZoneId ZONE = ZoneId.of("UTC");
     private static final DateTimeFormatter[] FORMATTERS = {
-        DateTimeFormatter.ofPattern("H:m:s a"), // Original format required by DateFormat
-        DateTimeFormatter.ofPattern("h:m:s a"),
-        DateTimeFormatter.ofPattern("H:m a"),
-        DateTimeFormatter.ofPattern("h:m a"),
-        DateTimeFormatter.ofPattern("H:m:s"),
-        DateTimeFormatter.ofPattern("h:m:s"),
-        DateTimeFormatter.ofPattern("H:m"),
-        DateTimeFormatter.ofPattern("h:m"),
+            DateTimeFormatter.ofPattern("H:m:s a"), // Original format required by DateFormat
+            DateTimeFormatter.ofPattern("h:m:s a"),
+            DateTimeFormatter.ofPattern("H:m a"),
+            DateTimeFormatter.ofPattern("h:m a"),
+            DateTimeFormatter.ofPattern("H:m:s"),
+            DateTimeFormatter.ofPattern("h:m:s"),
+            DateTimeFormatter.ofPattern("H:m"),
+            DateTimeFormatter.ofPattern("h:m"),
     };
+
 
     @DataBoundConstructor
     public ScheduleBuildGlobalConfiguration() {
-        this.defaultScheduleTime = new Date(0, 0, 0, 22, 0);
         this.timeZone = TimeZone.getDefault().getID();
+        defaultStartTime = "22:00:00";
+        LOGGER.log(Level.INFO, () -> "Default ZoneId: " + ZoneId.systemDefault());
         load();
+        defaultScheduleLocalTime = LocalTime.parse(defaultStartTime, getTimeFormatter());
     }
 
-    public String getDefaultScheduleTime() {
-        return getTimeFormat().format(this.defaultScheduleTime);
+    @Override
+    public void load() {
+        super.load();
+        if (defaultScheduleTime != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(TIME_PATTERN);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            setDefaultStartTime(sdf.format(this.defaultScheduleTime));
+        }
+    }
+
+    public String getDefaultStartTime() {
+        return defaultStartTime;
+    }
+
+    @DataBoundSetter
+    public void setDefaultStartTime(String defaultStartTime) {
+        defaultScheduleLocalTime = LocalTime.parse(defaultStartTime, getTimeFormatter());
+        this.defaultStartTime = defaultStartTime;
     }
 
     @DataBoundSetter
@@ -82,6 +111,10 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             }
             /* Throw the original exception if no match is found */
             throw parseException;
+        } finally {
+            SimpleDateFormat sdf = new SimpleDateFormat(TIME_PATTERN);
+            sdf.setTimeZone(TimeZone.getTimeZone(ZONE));
+            setDefaultStartTime(sdf.format(this.defaultScheduleTime));
         }
     }
 
@@ -94,8 +127,12 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         this.timeZone = timeZone;
     }
 
-    public TimeZone getTimeZoneObject() {
-        return TimeZone.getTimeZone(getTimeZone());
+    public ZoneId getZoneId() {
+        try {
+            return ZoneId.of(timeZone);
+        } catch (DateTimeException dte) {
+            return ZoneId.systemDefault();
+        }
     }
 
     private DateFormat getTimeFormat() {
@@ -105,16 +142,25 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         return DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
     }
 
-    public Date getDefaultScheduleTimeObject() {
-        return new Date(this.defaultScheduleTime.getTime());
+    private DateTimeFormatter getTimeFormatter() {
+        return DateTimeFormatter.ofPattern(TIME_PATTERN);
+    }
+
+    /**
+     * Returns a ZonedDateTime object on the current date in the configured timezone.
+     * @return scheduletime
+     */
+    public ZonedDateTime getDefaultScheduleTimeObject() {
+        ZonedDateTime zdt = defaultScheduleLocalTime.atDate(LocalDate.now()).atZone(getZoneId());
+        return zdt;
     }
 
     @RequirePOST
-    public FormValidation doCheckDefaultScheduleTime(@QueryParameter String value) {
+    public FormValidation doCheckDefaultStartTime(@QueryParameter String value) {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         try {
-            getTimeFormat().parse(value);
-        } catch (ParseException ex) {
+            LocalTime.parse(value, getTimeFormatter());
+        } catch (DateTimeParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_ParsingError());
         }
         return FormValidation.ok();
@@ -131,19 +177,28 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         }
     }
 
+    public ListBoxModel doFillTimeZoneItems() {
+        ListBoxModel items = new ListBoxModel();
+        for (String id : TimeZone.getAvailableIDs()) {
+            if (id.equalsIgnoreCase(timeZone)) {
+                items.add(new ListBoxModel.Option(id, id, true));
+            } else {
+                items.add(id);
+            }
+        }
+        return items;
+    }
+
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         // reset before data-binding
         this.defaultScheduleTime = null;
         this.timeZone = null;
-        if (json.containsKey("defaultScheduleTime") && json.containsKey("timeZone")) {
-            try {
-                this.defaultScheduleTime = getTimeFormat().parse(json.getString("defaultScheduleTime"));
-                this.timeZone = json.getString("timeZone");
-                save();
-                return true;
-            } catch (ParseException ex) {
-            }
+        if (json.containsKey("defaultStartTime") && json.containsKey("timeZone")) {
+            setDefaultStartTime(json.getString("defaultStartTime"));
+            this.timeZone = json.getString("timeZone");
+            save();
+            return true;
         }
         return false;
     }

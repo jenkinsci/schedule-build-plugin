@@ -5,7 +5,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThrows;
 
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 import jenkins.model.GlobalConfiguration;
@@ -127,7 +129,9 @@ public class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     public void testGetDefaultScheduleTimeObject() {
-        Date expectedDate = new Date(0, 0, 0, 22, 0);
-        assertThat(globalConfig.getDefaultScheduleTimeObject(), is(expectedDate));
+        ZonedDateTime zdt = globalConfig.getDefaultScheduleTimeObject();
+        assertThat(zdt.getHour(), is(22));
+        assertThat(zdt.getMinute(), is(0));
+        assertThat(zdt.getSecond(), is(0));
     }
 }
