@@ -2,19 +2,25 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import hudson.model.FreeStyleProject;
+import hudson.util.FormValidation;
 import java.io.IOException;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.kohsuke.stapler.ForwardToView;
+import org.kohsuke.stapler.HttpRedirect;
+import org.kohsuke.stapler.HttpResponse;
 
 public class ScheduleBuildActionTest {
 
@@ -69,11 +75,6 @@ public class ScheduleBuildActionTest {
     }
 
     @Test
-    public void testGetIconPath() {
-        assertThat(scheduleBuildAction.getIconPath(), endsWith("/plugin/schedule-build/"));
-    }
-
-    @Test
     public void testGetQuietPeriodInSeconds() {
         assertThat(scheduleBuildAction.getQuietPeriodInSeconds(), is(0L));
     }
@@ -90,13 +91,55 @@ public class ScheduleBuildActionTest {
 
     @Test
     public void testGetDefaultDate() throws Exception {
-        assertThat(scheduleBuildAction.getDefaultDate(), matchesPattern(".* 10:00:00\\hPM"));
+        assertThat(scheduleBuildAction.getDefaultDate(), matchesPattern(".* 22:00:00"));
     }
 
     @Test
     public void testGetDefaultDateObject() throws Exception {
-        Date now = new Date();
-        Date defaultDate = scheduleBuildAction.getDefaultDateObject();
-        assertThat("Default build date is not after current time", defaultDate.after(now));
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime defaultDate = scheduleBuildAction.getDefaultDateObject();
+        assertThat("Default build date is not after current time", defaultDate.isAfter(now));
+    }
+
+    @Test
+    public void testDoCheckValidDate() {
+        ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        assertThat(
+                scheduleBuildAction.doCheckDate(tomorrow.format(formatter), project).kind, is(FormValidation.Kind.OK));
+    }
+
+    @Test
+    public void testDoCheckInvalidDate() {
+        FormValidation validation = scheduleBuildAction.doCheckDate("43-23-2024 1:2:3", project);
+        assertThat(validation.kind, is(FormValidation.Kind.ERROR));
+        assertThat(validation.getMessage(), containsString("Not a valid build time"));
+    }
+
+    @Test
+    public void testDoCheckDateInPast() {
+        FormValidation validation = scheduleBuildAction.doCheckDate("01-01-2020 01:00:00", project);
+        assertThat(validation.kind, is(FormValidation.Kind.ERROR));
+        assertThat(validation.getMessage(), containsString("Build cannot be scheduled in the past"));
+    }
+
+    @Test
+    public void testDoNextValidDate() {
+        ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        assertThat(
+                scheduleBuildAction.doNext(tomorrow.format(formatter), project), is(instanceOf(ForwardToView.class)));
+    }
+
+    @Test
+    public void testDoNextInvalidDate() {
+        HttpResponse validation = scheduleBuildAction.doNext("43-23-2024 1:2:3", project);
+        assertThat(validation, is(instanceOf(HttpRedirect.class)));
+    }
+
+    @Test
+    public void testDoNextDateInPast() {
+        HttpResponse validation = scheduleBuildAction.doNext("01-01-2020 01:00:00", project);
+        assertThat(validation, is(instanceOf(HttpRedirect.class)));
     }
 }

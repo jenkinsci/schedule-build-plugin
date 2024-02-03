@@ -1,4 +1,4 @@
 unclassified:
   scheduleBuild:
-    defaultScheduleTime: "12:34:56"
+    defaultScheduleTime: "12:34:56 AM"
     timeZone: "Europe/Rome"

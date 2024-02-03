@@ -2,13 +2,13 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThrows;
 
-import java.time.LocalTime;
+import hudson.util.FormValidation;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.format.DateTimeParseException;
 import java.util.TimeZone;
 import jenkins.model.GlobalConfiguration;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class ScheduleBuildGlobalConfigurationTest {
     @Test
     public void configRoundTripTestNoChanges() throws Exception {
         assertThat(globalConfig, is(not(nullValue())));
-        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
+        assertThat(globalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(globalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
 
         // Submit the global configuration page with no changes
@@ -42,7 +42,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         ScheduleBuildGlobalConfiguration newGlobalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
-        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
+        assertThat(newGlobalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(newGlobalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
     }
 
@@ -51,7 +51,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         // Adjust global configuration values
         String newScheduleTime = "1:23:45 PM";
         String newTimeZone = "Europe/Rome";
-        globalConfig.setDefaultScheduleTime(newScheduleTime);
+        globalConfig.setDefaultStartTime(newScheduleTime);
         globalConfig.setTimeZone(newTimeZone);
 
         // Submit the global configuration page, will not change adjusted values
@@ -60,7 +60,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         ScheduleBuildGlobalConfiguration newGlobalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
-        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("1:23:45\\hPM"));
+        assertThat(newGlobalConfig.getDefaultStartTime(), is("13:23:45"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
     }
 
@@ -69,7 +69,7 @@ public class ScheduleBuildGlobalConfigurationTest {
         // Adjust global configuration values
         String newScheduleTime = "2:34";
         String newTimeZone = "Europe/Rome";
-        globalConfig.setDefaultScheduleTime(newScheduleTime);
+        globalConfig.setDefaultStartTime(newScheduleTime);
         globalConfig.setTimeZone(newTimeZone);
 
         // Submit the global configuration page, will not change adjusted values
@@ -78,36 +78,43 @@ public class ScheduleBuildGlobalConfigurationTest {
         ScheduleBuildGlobalConfiguration newGlobalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(newGlobalConfig, is(not(nullValue())));
-        assertThat(newGlobalConfig.getDefaultScheduleTime(), matchesPattern("2:34:00\\hAM"));
+        assertThat(newGlobalConfig.getDefaultStartTime(), is("02:34:00"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
     }
 
     @Test
     public void testBadScheduleTime() throws Exception {
-        assertThrows(java.text.ParseException.class, () -> {
-            globalConfig.setDefaultScheduleTime("34:56:78");
+        assertThrows(DateTimeParseException.class, () -> {
+            globalConfig.setDefaultStartTime("34:56:78");
         });
     }
 
     @Test
     public void testDoCheckTimeZone() throws Exception {
         globalConfig.setTimeZone("invalid time zone");
-        TimeZone timeZoneBefore = globalConfig.getTimeZoneObject();
+        ZoneId timeZoneBefore = globalConfig.getZoneId();
         globalConfig.setTimeZone("Another invalid time zone");
-        TimeZone timeZoneAfter = globalConfig.getTimeZoneObject();
+        ZoneId timeZoneAfter = globalConfig.getZoneId();
         assertThat(timeZoneBefore, is(timeZoneAfter));
     }
 
     @Test
-    public void testGetDefaultScheduleTime() {
-        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("10:00:00\\hPM"));
+    public void testGetDefaultStartTime() {
+        assertThat(globalConfig.getDefaultStartTime(), is("22:00:00"));
     }
 
     @Test
-    public void testSetDefaultScheduleTime() throws Exception {
-        String defaultScheduleTime = "12:34:56 PM";
-        globalConfig.setDefaultScheduleTime(defaultScheduleTime);
-        assertThat(globalConfig.getDefaultScheduleTime(), matchesPattern("12:34:56\\hPM"));
+    public void testSetDefaultStartTime() throws Exception {
+        String defaultScheduleTime = "12:34:56";
+        globalConfig.setDefaultStartTime(defaultScheduleTime);
+        assertThat(globalConfig.getDefaultStartTime(), is("12:34:56"));
+    }
+
+    @Test
+    public void testDoCheckDefaultStartTimeBad() throws Exception {
+        FormValidation validation = globalConfig.doCheckDefaultStartTime("25:34:56");
+        assertThat(validation.kind, is(FormValidation.Kind.ERROR));
+        assertThat(validation.getMessage(), containsString("Not a valid build time"));
     }
 
     @Test
@@ -124,7 +131,7 @@ public class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     public void testGetTimeZoneObject() {
-        assertThat(globalConfig.getTimeZoneObject(), is(TimeZone.getDefault()));
+        assertThat(globalConfig.getZoneId(), is(ZoneId.systemDefault()));
     }
 
     @Test
