@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.interceptor.RequirePOST;
+import org.kohsuke.stapler.verb.POST;
 
 @Extension
 @Symbol("scheduleBuild")
@@ -157,7 +158,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         }
     }
 
+    @POST
     public ListBoxModel doFillTimeZoneItems() {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER); // Admin permission required for global config
         ListBoxModel items = new ListBoxModel();
         Set<String> zoneIds = new TreeSet<>(ZoneId.getAvailableZoneIds());
         for (String id : zoneIds) {
