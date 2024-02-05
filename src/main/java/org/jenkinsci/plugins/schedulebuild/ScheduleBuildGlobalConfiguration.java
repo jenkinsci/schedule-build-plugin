@@ -149,7 +149,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @RequirePOST
     public FormValidation doCheckTimeZone(@QueryParameter String value) {
-        Jenkins.get().checkAnyPermission(Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
+        Jenkins.get()
+                .checkAnyPermission(
+                        Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
         ZoneId zone = ZoneId.of(value);
         if (StringUtils.equals(zone.getId(), value)) {
             return FormValidation.ok();
@@ -160,7 +162,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @POST
     public ListBoxModel doFillTimeZoneItems() {
-        Jenkins.get().checkAnyPermission(Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
+        Jenkins.get()
+                .checkAnyPermission(
+                        Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
         ListBoxModel items = new ListBoxModel();
         Set<String> zoneIds = new TreeSet<>(ZoneId.getAvailableZoneIds());
         for (String id : zoneIds) {
