@@ -116,7 +116,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     @RequirePOST
-    public FormValidation doCheckDate(@QueryParameter String date, @AncestorInPath Item item) {
+    public FormValidation doCheckDate(@QueryParameter String value, @AncestorInPath Item item) {
         if (item == null) {
             return FormValidation.ok();
         }
@@ -125,7 +125,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         Date ddate, now = new Date();
         DateFormat dateFormat = dateFormat();
         try {
-            ddate = dateFormat.parse(date);
+            ddate = dateFormat.parse(value);
             now = dateFormat.parse(dateFormat.format(now));
         } catch (ParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
