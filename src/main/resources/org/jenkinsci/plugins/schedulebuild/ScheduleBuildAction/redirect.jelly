@@ -5,13 +5,12 @@
       <!--
         Auto submits the form to the jenkins server
       -->
-      <p>
-        Submitting your changes to the server...
+      <p id="schedule-build-data" data-url="${rootURL}/${it.owner.url}"
+         data-quiet-period-seconds="${it.quietPeriodInSeconds}"
+         data-parameterized="${it.owner.parameterized}">
+        <l:spinner text="Submitting your changes to the server..." />
       </p>
-       <script src="${rootURL}/plugin/schedule-build/scheduleRequest.js"/>
-      <script>
-      	sumbitScheduleRequest("${it.owner.absoluteUrl}", ${it.quietPeriodInSeconds}, ${it.jobParameterized});
-      </script>
+      <script src="${rootURL}/plugin/schedule-build/scheduleRequest.js"/>
     </l:main-panel>
   </l:layout>
 </j:jelly>

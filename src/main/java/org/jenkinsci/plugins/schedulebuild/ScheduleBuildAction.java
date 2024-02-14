@@ -92,7 +92,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     @RequirePOST
-    public FormValidation doCheckDate(@QueryParameter String date, @AncestorInPath Item item) {
+    public FormValidation doCheckDate(@QueryParameter String value, @AncestorInPath Item item) {
         if (item == null) {
             return FormValidation.ok();
         }
