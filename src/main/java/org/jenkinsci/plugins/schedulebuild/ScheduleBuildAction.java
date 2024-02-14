@@ -101,7 +101,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime ddate;
         try {
-            ddate = LocalDateTime.parse(date.trim(), getDateTimeFormatter())
+            ddate = LocalDateTime.parse(value.trim(), getDateTimeFormatter())
                     .atZone(new ScheduleBuildGlobalConfiguration().getZoneId())
                     .plusSeconds(SECURITY_MARGIN);
         } catch (DateTimeParseException ex) {
