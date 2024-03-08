@@ -134,8 +134,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
         final String time = date.trim();
         try {
-            ddate = parseDateTime(time)
-                    .atZone(new ScheduleBuildGlobalConfiguration().getZoneId());
+            ddate = parseDateTime(time).atZone(new ScheduleBuildGlobalConfiguration().getZoneId());
         } catch (DateTimeParseException ex) {
             LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
             return HttpResponses.redirectTo("error");
@@ -153,10 +152,10 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         DateTimeParseException exception = null;
         for (DateTimeFormatter formatter : FORMATTERS) {
             try {
-               return LocalDateTime.parse(time.toUpperCase(Locale.ROOT), formatter);
+                return LocalDateTime.parse(time.toUpperCase(Locale.ROOT), formatter);
             } catch (DateTimeParseException dtex) {
-              exception = dtex;
-              LOGGER.log(Level.FINE, dtex, () -> "Did not parse '" + time + "' with formatter " + formatter);
+                exception = dtex;
+                LOGGER.log(Level.FINE, dtex, () -> "Did not parse '" + time + "' with formatter " + formatter);
             }
         }
         throw exception;
