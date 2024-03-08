@@ -46,7 +46,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     private static final String TIME_PATTERN = "HH:mm:ss";
 
     private static final DateTimeFormatter[] FORMATTERS = {
-        DateTimeFormatter.ofPattern("H:m[:s]"), DateTimeFormatter.ofPattern("h:m[:s] a", Locale.US),
+        DateTimeFormatter.ofPattern("H:m[:s]"), DateTimeFormatter.ofPattern("h:m[:s] a", Locale.ROOT),
     };
 
     @DataBoundConstructor
@@ -96,7 +96,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         final String ftime = time.trim();
         for (DateTimeFormatter formatter : FORMATTERS) {
             try {
-                return LocalTime.parse(ftime, formatter);
+                return LocalTime.parse(ftime.toUpperCase(Locale.ROOT), formatter);
             } catch (DateTimeParseException dtex) {
                 exception = dtex;
                 LOGGER.log(Level.FINE, dtex, () -> "Did not parse '" + ftime + "' with formatter " + formatter);

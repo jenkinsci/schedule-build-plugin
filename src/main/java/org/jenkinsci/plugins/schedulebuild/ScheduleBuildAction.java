@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONObject;
@@ -33,7 +34,11 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     private static final long SECURITY_MARGIN = 120;
 
     private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
-    private static final String PARSE_DATE_TIME_PATTERN = "d-M-y H:m[:s]";
+
+    private static final DateTimeFormatter[] FORMATTERS = {
+        DateTimeFormatter.ofPattern("d-M-y H:m[:s]"), DateTimeFormatter.ofPattern("d-M-y h:m[:s] a", Locale.ROOT),
+    };
+
     private long quietperiod;
 
     public ScheduleBuildAction(final Job<?, ?> target) {
@@ -101,7 +106,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime ddate;
         try {
-            ddate = LocalDateTime.parse(value.trim(), getDateTimeFormatter())
+            ddate = parseDateTime(value.trim())
                     .atZone(new ScheduleBuildGlobalConfiguration().getZoneId())
                     .plusSeconds(SECURITY_MARGIN);
         } catch (DateTimeParseException ex) {
@@ -129,7 +134,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
         final String time = date.trim();
         try {
-            ddate = LocalDateTime.parse(time, getDateTimeFormatter())
+            ddate = parseDateTime(time)
                     .atZone(new ScheduleBuildGlobalConfiguration().getZoneId());
         } catch (DateTimeParseException ex) {
             LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
@@ -144,15 +149,24 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         return HttpResponses.forwardToView(this, "redirect");
     }
 
+    private LocalDateTime parseDateTime(String time) {
+        DateTimeParseException exception = null;
+        for (DateTimeFormatter formatter : FORMATTERS) {
+            try {
+               return LocalDateTime.parse(time.toUpperCase(Locale.ROOT), formatter);
+            } catch (DateTimeParseException dtex) {
+              exception = dtex;
+              LOGGER.log(Level.FINE, dtex, () -> "Did not parse '" + time + "' with formatter " + formatter);
+            }
+        }
+        throw exception;
+    }
+
     public boolean isJobParameterized() {
         ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
         return paramDefinitions != null
                 && paramDefinitions.getParameterDefinitions() != null
                 && paramDefinitions.getParameterDefinitions().size() > 0;
-    }
-
-    private DateTimeFormatter getDateTimeFormatter() {
-        return DateTimeFormatter.ofPattern(PARSE_DATE_TIME_PATTERN);
     }
 
     @Restricted(NoExternalUse.class)
