@@ -42,7 +42,7 @@ Add to your yaml file:
 ```yaml
 unclassified:
   scheduleBuild:
-    defaultScheduleTime: "11:00:00 PM"
+    defaultStartTime: "11:00:00 PM"
     timeZone: "Europe/Paris"
 ```
 

@@ -9,14 +9,14 @@ import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
 import jenkins.model.GlobalConfiguration;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
 
-public class JCasCGlobalAllFields extends RoundTripAbstractTest {
+public class JCasCGlobalOldFieldsTest extends RoundTripAbstractTest {
 
     @Override
     protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {
         ScheduleBuildGlobalConfiguration globalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(globalConfig, is(not(nullValue())));
-        assertThat(globalConfig.getDefaultScheduleTime(), is("12:34:56 AM"));
+        assertThat(globalConfig.getDefaultStartTime(), is("00:34:56"));
         assertThat(globalConfig.getTimeZone(), is("Europe/Rome"));
     }
 
@@ -27,6 +27,6 @@ public class JCasCGlobalAllFields extends RoundTripAbstractTest {
 
     @Override
     protected String configResource() {
-        return "scheduleBuild-all-fields.yaml";
+        return "scheduleBuild-old-fields.yaml";
     }
 }
