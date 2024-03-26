@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.schedulebuild;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Job;
+import hudson.model.TopLevelItem;
 import java.util.Collection;
 import java.util.Collections;
 import jenkins.model.TransientActionFactory;
@@ -17,6 +18,10 @@ public final class ScheduleBuildTransientProjectActionFactory extends TransientA
 
     @Override
     public Collection<? extends Action> createFor(Job target) {
-        return Collections.singleton(new ScheduleBuildAction(target));
+        if (target instanceof TopLevelItem) {
+            return Collections.singleton(new ScheduleBuildAction(target));
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

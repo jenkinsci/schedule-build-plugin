@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
     <td class="jenkins-table__cell--tight">
-        <j:if test="${job.buildable and job.hasPermission(job.BUILD)}">
+        <j:if test="${it.isBuildable(job) and job.buildable and job.hasPermission(job.BUILD)}">
              <div class="jenkins-table__cell__button-wrapper">
                  <j:set var="href" value="${jobBaseUrl}${job.shortUrl}schedule"/>
                  <a href="${href}" tooltip="${%ScheduleBuildColumn.Title}" class="jenkins-table__button">
