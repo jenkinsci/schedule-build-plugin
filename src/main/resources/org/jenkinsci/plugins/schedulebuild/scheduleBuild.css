@@ -1,0 +1,7 @@
+#schedule-build-flatpickr {
+  display: flex;
+  gap: 5px;
+}
+#schedule-build-flatpickr > input {
+  width: fit-content;
+}

@@ -61,7 +61,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.version>2.426.3</jenkins.version>
+    <jenkins.version>2.440.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
     <spotless.check.skip>false</spotless.check.skip>
@@ -71,7 +71,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.426.x</artifactId>
+        <artifactId>bom-2.440.x</artifactId>
         <version>3105.v672692894683</version>
         <type>pom</type>
         <scope>import</scope>
@@ -79,6 +79,11 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>flatpickr-api</artifactId>
+      <version>4.6.13-5.v534d8025a_a_59</version>
+    </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
