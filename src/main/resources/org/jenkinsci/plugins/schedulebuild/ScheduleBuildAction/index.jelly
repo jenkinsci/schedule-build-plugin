@@ -6,13 +6,21 @@
             <h1>${%Project} ${it.owner.name}</h1>
             <f:form name="schedule" action="next" method="post">
                 <f:entry title="${%BuildOn} (${it.dateTimeFormatting}):" help="/plugin/schedule-build/help/help-date.html" description="Timezone: ${it.timeZone}">
-                    <f:textbox id="schedule-build-input" name="date" value="${it.defaultDate}" checkUrl="${rootURL}/${it.owner.url}schedule/checkDate" checkDependsOn=""/>
+                    <div id="schedule-build-flatpickr" data-now="${it.minDate}">
+                      <f:textbox id="schedule-build-input" name="date" value="${it.defaultDate}"
+                                 checkUrl="${rootURL}/${it.owner.url}schedule/checkDate"
+                                 checkDependsOn="" data-input=""/>
+                      <button class="jenkins-button" type="button" data-toggle="" tooltip="Open datetime picker">
+                          <l:icon src="symbol-calendar-outline plugin-ionicons-api"/>
+                      </button>
+                    </div>
                 </f:entry>
                 <f:entry>
                     <f:submit value="${%Schedule}" id="schedule-build-button"/>
                 </f:entry>
             </f:form>
-            <script src="${rootURL}/plugin/schedule-build/scheduleBuild.js"/>
+            <st:adjunct includes="io.jenkins.plugins.flatpickr"/>
+            <st:adjunct includes="org.jenkinsci.plugins.schedulebuild.scheduleBuild"/>
         </l:main-panel>
     </l:layout>
 </j:jelly>

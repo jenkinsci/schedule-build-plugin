@@ -96,6 +96,12 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         return zdt;
     }
 
+    public String getMinDate() {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime zonedNow = now.withZoneSameInstant(new ScheduleBuildGlobalConfiguration().getZoneId());
+        return zonedNow.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+    }
+
     @RequirePOST
     public FormValidation doCheckDate(@QueryParameter String value, @AncestorInPath Item item) {
         if (item == null) {
