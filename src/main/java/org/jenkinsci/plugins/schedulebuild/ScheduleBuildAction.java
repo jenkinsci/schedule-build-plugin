@@ -23,7 +23,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerProxy;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
@@ -73,7 +73,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         return "schedule";
     }
 
-    public boolean schedule(StaplerRequest req, JSONObject formData) throws FormException {
+    public boolean schedule(StaplerRequest2 req, JSONObject formData) throws FormException {
         return true;
     }
 
