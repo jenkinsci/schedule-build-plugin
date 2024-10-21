@@ -6,35 +6,33 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.FreeStyleProject;
 import hudson.util.FormValidation;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.ForwardToView;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
+@WithJenkins
 public class ScheduleBuildActionTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
 
     private ScheduleBuildAction scheduleBuildAction;
     private FreeStyleProject project;
 
     public ScheduleBuildActionTest() {}
 
-    @Before
-    public void setUp() throws IOException {
-        project = j.createFreeStyleProject();
+    @BeforeEach
+    public void setUp(JenkinsRule r) throws IOException {
+        project = r.createFreeStyleProject();
         scheduleBuildAction = new ScheduleBuildAction(project);
     }
 
