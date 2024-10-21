@@ -7,7 +7,7 @@ import hudson.model.TopLevelItem;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public class ScheduleBuildButtonColumn extends ListViewColumn {
 
@@ -22,7 +22,7 @@ public class ScheduleBuildButtonColumn extends ListViewColumn {
         }
 
         @Override
-        public ListViewColumn newInstance(final StaplerRequest request, final JSONObject formData)
+        public ListViewColumn newInstance(final StaplerRequest2 request, final JSONObject formData)
                 throws FormException {
             return new ScheduleBuildButtonColumn();
         }
