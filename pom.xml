@@ -56,7 +56,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>flatpickr-api</artifactId>
-      <version>4.6.13-5.v534d8025a_a_59</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
