@@ -5,14 +5,16 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
+import io.jenkins.plugins.casc.misc.junit.jupiter.AbstractRoundTripTest;
 import jenkins.model.GlobalConfiguration;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class JCasCGlobalNewFieldsTest extends RoundTripAbstractTest {
+@WithJenkins
+class JCasCGlobalNewFieldsTest extends AbstractRoundTripTest {
 
     @Override
-    protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {
+    protected void assertConfiguredAsExpected(JenkinsRule j, String configContent) {
         ScheduleBuildGlobalConfiguration globalConfig =
                 GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
         assertThat(globalConfig, is(not(nullValue())));

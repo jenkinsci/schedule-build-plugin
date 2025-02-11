@@ -1,12 +1,26 @@
 package org.jenkinsci.plugins.schedulebuild;
 
-import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class JCasCGlobalConfigurationTest extends RoundTripAbstractTest {
+import io.jenkins.plugins.casc.misc.junit.jupiter.AbstractRoundTripTest;
+import jenkins.model.GlobalConfiguration;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+
+@WithJenkins
+class JCasCGlobalConfigurationTest extends AbstractRoundTripTest {
 
     @Override
-    protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {}
+    protected void assertConfiguredAsExpected(JenkinsRule j, String configContent) {
+        ScheduleBuildGlobalConfiguration globalConfig =
+                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        assertThat(globalConfig, is(not(nullValue())));
+        assertThat(globalConfig.getDefaultStartTime(), is("22:00:00"));
+        assertThat(globalConfig.getTimeZone(), is("Europe/Paris"));
+    }
 
     @Override
     protected String stringInLogExpected() {
