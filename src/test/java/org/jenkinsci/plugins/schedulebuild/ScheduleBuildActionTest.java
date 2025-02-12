@@ -23,84 +23,82 @@ import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 @WithJenkins
-public class ScheduleBuildActionTest {
+class ScheduleBuildActionTest {
 
     private ScheduleBuildAction scheduleBuildAction;
     private FreeStyleProject project;
 
-    public ScheduleBuildActionTest() {}
-
     @BeforeEach
-    public void setUp(JenkinsRule r) throws IOException {
+    void setUp(JenkinsRule r) throws IOException {
         project = r.createFreeStyleProject();
         scheduleBuildAction = new ScheduleBuildAction(project);
     }
 
     @Test
-    public void testGetOwner() {
+    void testGetOwner() {
         assertThat(scheduleBuildAction.getOwner(), is(project));
     }
 
     @Test
-    public void testGetIconFileName() throws Exception {
+    void testGetIconFileName() throws Exception {
         assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
         project.disable();
         assertThat(scheduleBuildAction.getIconFileName(), is(nullValue()));
     }
 
     @Test
-    public void testGetIconClassName() throws Exception {
+    void testGetIconClassName() throws Exception {
         assertThat(scheduleBuildAction.getIconClassName(), is("symbol-calendar-outline plugin-ionicons-api"));
         project.disable();
         assertThat(scheduleBuildAction.getIconClassName(), is(nullValue()));
     }
 
     @Test
-    public void testGetDisplayName() throws Exception {
+    void testGetDisplayName() throws Exception {
         assertThat(scheduleBuildAction.getDisplayName(), is("Schedule Build"));
         project.disable();
         assertThat(scheduleBuildAction.getDisplayName(), is(nullValue()));
     }
 
     @Test
-    public void testGetUrlName() {
+    void testGetUrlName() {
         assertThat(scheduleBuildAction.getUrlName(), is("schedule"));
     }
 
     @Test
-    public void testGetTarget() {
+    void testGetTarget() {
         assertThat(scheduleBuildAction.getTarget(), is(scheduleBuildAction));
     }
 
     @Test
-    public void testGetQuietPeriodInSeconds() {
+    void testGetQuietPeriodInSeconds() {
         assertThat(scheduleBuildAction.getQuietPeriodInSeconds(), is(0L));
     }
 
     @Test
-    public void testIsJobParameterized() {
+    void testIsJobParameterized() {
         assertFalse(scheduleBuildAction.isJobParameterized());
     }
 
     @Test
-    public void testSchedule() throws Exception {
+    void testSchedule() throws Exception {
         assertTrue(scheduleBuildAction.schedule(null, null));
     }
 
     @Test
-    public void testGetDefaultDate() throws Exception {
+    void testGetDefaultDate() {
         assertThat(scheduleBuildAction.getDefaultDate(), matchesPattern(".* 22:00:00"));
     }
 
     @Test
-    public void testGetDefaultDateObject() throws Exception {
+    void testGetDefaultDateObject() {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime defaultDate = scheduleBuildAction.getDefaultDateObject();
         assertThat("Default build date is not after current time", defaultDate.isAfter(now));
     }
 
     @Test
-    public void testDoCheckValidDate() {
+    void testDoCheckValidDate() {
         ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         assertThat(
@@ -108,21 +106,21 @@ public class ScheduleBuildActionTest {
     }
 
     @Test
-    public void testDoCheckInvalidDate() {
+    void testDoCheckInvalidDate() {
         FormValidation validation = scheduleBuildAction.doCheckDate("43-23-2024 1:2:3", project);
         assertThat(validation.kind, is(FormValidation.Kind.ERROR));
         assertThat(validation.getMessage(), containsString("Not a valid build time"));
     }
 
     @Test
-    public void testDoCheckDateInPast() {
+    void testDoCheckDateInPast() {
         FormValidation validation = scheduleBuildAction.doCheckDate("01-01-2020 01:00:00", project);
         assertThat(validation.kind, is(FormValidation.Kind.ERROR));
         assertThat(validation.getMessage(), containsString("Build cannot be scheduled in the past"));
     }
 
     @Test
-    public void testDoNextValidDate() {
+    void testDoNextValidDate() {
         ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         assertThat(
@@ -130,13 +128,13 @@ public class ScheduleBuildActionTest {
     }
 
     @Test
-    public void testDoNextInvalidDate() {
+    void testDoNextInvalidDate() {
         HttpResponse validation = scheduleBuildAction.doNext("43-23-2024 1:2:3", project);
         assertThat(validation, is(instanceOf(HttpRedirect.class)));
     }
 
     @Test
-    public void testDoNextDateInPast() {
+    void testDoNextDateInPast() {
         HttpResponse validation = scheduleBuildAction.doNext("01-01-2020 01:00:00", project);
         assertThat(validation, is(instanceOf(HttpRedirect.class)));
     }
