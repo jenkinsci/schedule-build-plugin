@@ -9,6 +9,7 @@ if (d.dataset.parameterized === "true") {
   fetch(scheduleUrl, {
     method: "post",
     headers: crumb.wrap({}),
+  }).then(function() {
+    window.location = url;
   });
-  window.location = url;
 }
