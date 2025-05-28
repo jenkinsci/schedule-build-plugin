@@ -23,6 +23,12 @@ period.
 
 ![](docs/images/Schedule_Build_Queue.png)
 
+## Scheduling parameterized jobs
+
+Parameterized jobs can also be scheduled with the plugin.
+The parameter page for the job is displayed to the user immediately after the "Schedule" button is pressed.
+Once the parameter values are selected, the job will be scheduled.
+
 ## Configure Schedule Build Plugin
 
 The configuration of the schedule build plugin is very simple. There are
