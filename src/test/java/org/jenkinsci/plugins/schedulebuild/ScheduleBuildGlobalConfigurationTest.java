@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.TimeZone;
-import jenkins.model.GlobalConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -26,7 +25,7 @@ class ScheduleBuildGlobalConfigurationTest {
     @BeforeEach
     void setUp(JenkinsRule j) {
         this.j = j;
-        globalConfig = GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        globalConfig = ScheduleBuildGlobalConfiguration.get();
     }
 
     @Test
@@ -38,8 +37,7 @@ class ScheduleBuildGlobalConfigurationTest {
         // Submit the global configuration page with no changes
         j.configRoundtrip();
 
-        ScheduleBuildGlobalConfiguration newGlobalConfig =
-                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        ScheduleBuildGlobalConfiguration newGlobalConfig = ScheduleBuildGlobalConfiguration.get();
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(newGlobalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
@@ -56,8 +54,7 @@ class ScheduleBuildGlobalConfigurationTest {
         // Submit the global configuration page, will not change adjusted values
         j.configRoundtrip();
 
-        ScheduleBuildGlobalConfiguration newGlobalConfig =
-                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        ScheduleBuildGlobalConfiguration newGlobalConfig = ScheduleBuildGlobalConfiguration.get();
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultStartTime(), is("13:23:45"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
@@ -74,8 +71,7 @@ class ScheduleBuildGlobalConfigurationTest {
         // Submit the global configuration page, will not change adjusted values
         j.configRoundtrip();
 
-        ScheduleBuildGlobalConfiguration newGlobalConfig =
-                GlobalConfiguration.all().getInstance(ScheduleBuildGlobalConfiguration.class);
+        ScheduleBuildGlobalConfiguration newGlobalConfig = ScheduleBuildGlobalConfiguration.get();
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultStartTime(), is("02:34:00"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
