@@ -88,7 +88,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     public ZonedDateTime getDefaultDateObject() {
-        ZonedDateTime zdt = new ScheduleBuildGlobalConfiguration().getDefaultScheduleTimeObject();
+        ZonedDateTime zdt = ScheduleBuildGlobalConfiguration.get().getDefaultScheduleTimeObject();
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(zdt)) {
             zdt = zdt.plusDays(1);
@@ -98,7 +98,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     public String getMinDate() {
         ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime zonedNow = now.withZoneSameInstant(new ScheduleBuildGlobalConfiguration().getZoneId());
+        ZonedDateTime zonedNow =
+                now.withZoneSameInstant(ScheduleBuildGlobalConfiguration.get().getZoneId());
         return zonedNow.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 
@@ -113,7 +114,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         ZonedDateTime ddate;
         try {
             ddate = parseDateTime(value.trim())
-                    .atZone(new ScheduleBuildGlobalConfiguration().getZoneId())
+                    .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId())
                     .plusSeconds(SECURITY_MARGIN);
         } catch (DateTimeParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
@@ -140,7 +141,8 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
         final String time = date.trim();
         try {
-            ddate = parseDateTime(time).atZone(new ScheduleBuildGlobalConfiguration().getZoneId());
+            ddate = parseDateTime(time)
+                    .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId());
         } catch (DateTimeParseException ex) {
             LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
             return HttpResponses.redirectTo("error");
@@ -181,6 +183,6 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     @Restricted(NoExternalUse.class)
     public String getTimeZone() {
-        return new ScheduleBuildGlobalConfiguration().getTimeZone();
+        return ScheduleBuildGlobalConfiguration.get().getTimeZone();
     }
 }
