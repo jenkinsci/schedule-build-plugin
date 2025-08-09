@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -40,6 +41,10 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     private String defaultStartTime;
 
     private transient LocalTime defaultScheduleLocalTime;
+
+    // Cache for ZoneId to avoid repeated parsing
+    private transient ZoneId cachedZoneId;
+    private transient String cachedTimeZoneString;
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildGlobalConfiguration.class.getName());
 
@@ -112,15 +117,27 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     @DataBoundSetter
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
+        // Clear cache when timezone changes
+        cachedZoneId = null;
+        cachedTimeZoneString = null;
         save();
     }
 
     public ZoneId getZoneId() {
-        try {
-            return ZoneId.of(timeZone);
-        } catch (DateTimeException dte) {
-            return ZoneId.systemDefault();
+        // Return cached value if timezone hasn't changed
+        if (cachedZoneId != null && Objects.equals(timeZone, cachedTimeZoneString)) {
+            return cachedZoneId;
         }
+
+        // Parse and cache the ZoneId
+        try {
+            cachedZoneId = ZoneId.of(timeZone);
+            cachedTimeZoneString = timeZone;
+        } catch (DateTimeException dte) {
+            cachedZoneId = ZoneId.systemDefault();
+            cachedTimeZoneString = timeZone;
+        }
+        return cachedZoneId;
     }
 
     private DateTimeFormatter getTimeFormatter() {
