@@ -126,12 +126,10 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @DataBoundSetter
     public void setTimeZone(String timeZone) {
-        if (!Objects.equals(this.timeZone, timeZone)) {
-            // Clear cache when timezone changes
-            cachedZoneId = null;
-            cachedTimeZoneString = null;
-        }
         this.timeZone = timeZone;
+        // Clear cache when timezone changes
+        cachedZoneId = null;
+        cachedTimeZoneString = null;
         save();
     }
 
