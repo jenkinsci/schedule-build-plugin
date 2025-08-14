@@ -230,4 +230,49 @@ class ScheduleBuildGlobalConfigurationTest {
         // Verify timezone getter returns empty string
         assertThat(globalConfig.getTimeZone(), is(emptyTimezone));
     }
+
+    @Test
+    void testGetZoneIdCacheHit() {
+        // Set a timezone to populate cache
+        String timezone = "Europe/Berlin";
+        globalConfig.setTimeZone(timezone);
+
+        // First call should populate cache
+        ZoneId firstResult = globalConfig.getZoneId();
+        assertThat(firstResult.toString(), is(timezone));
+
+        // Second call should hit cache (line 139 coverage)
+        ZoneId secondResult = globalConfig.getZoneId();
+        assertThat(secondResult, is(firstResult));
+        assertThat(secondResult.toString(), is(timezone));
+    }
+
+    @Test
+    void testGetZoneIdCacheMissWhenZoneIdNull() {
+        // Ensure we start with null cache by setting timezone
+        globalConfig.setTimeZone("Europe/Berlin");
+
+        // Clear cache by setting new timezone
+        globalConfig.setTimeZone("America/New_York");
+
+        // This should miss cache because cachedZoneId was cleared
+        ZoneId result = globalConfig.getZoneId();
+        assertThat(result.toString(), is("America/New_York"));
+    }
+
+    @Test
+    void testGetZoneIdCacheMissWhenTimeZoneStringsDiffer() {
+        // Set initial timezone and get ZoneId to populate cache
+        globalConfig.setTimeZone("Europe/Berlin");
+        ZoneId firstResult = globalConfig.getZoneId();
+
+        // Manually change the timeZone field to create a mismatch scenario
+        // This simulates the case where cachedZoneId != null but timeZone != cachedTimeZoneString
+        globalConfig.setTimeZone("America/New_York");
+
+        // This should miss cache because timeZone != cachedTimeZoneString
+        ZoneId secondResult = globalConfig.getZoneId();
+        assertThat(secondResult.toString(), is("America/New_York"));
+        assertThat(secondResult, is(not(firstResult)));
+    }
 }
