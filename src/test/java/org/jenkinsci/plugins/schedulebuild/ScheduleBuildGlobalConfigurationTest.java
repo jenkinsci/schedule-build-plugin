@@ -134,4 +134,100 @@ class ScheduleBuildGlobalConfigurationTest {
         assertThat(zdt.getMinute(), is(0));
         assertThat(zdt.getSecond(), is(0));
     }
+
+    @Test
+    void testSetTimeZoneClearsCacheWhenSame() {
+        // Set initial timezone
+        String timezone = "Europe/Berlin";
+        globalConfig.setTimeZone(timezone);
+
+        // Get ZoneId to populate cache
+        ZoneId firstZoneId = globalConfig.getZoneId();
+        assertThat(firstZoneId.toString(), is(timezone));
+
+        // Set same timezone again - cache should be cleared regardless
+        globalConfig.setTimeZone(timezone);
+
+        // Get ZoneId again - should work correctly even though cache was cleared
+        ZoneId secondZoneId = globalConfig.getZoneId();
+        assertThat(secondZoneId.toString(), is(timezone));
+        assertThat(secondZoneId, is(firstZoneId));
+    }
+
+    @Test
+    void testSetTimeZoneClearsCacheWhenDifferent() {
+        // Set initial timezone
+        String initialTimezone = "Europe/Berlin";
+        globalConfig.setTimeZone(initialTimezone);
+
+        // Get ZoneId to populate cache
+        ZoneId firstZoneId = globalConfig.getZoneId();
+        assertThat(firstZoneId.toString(), is(initialTimezone));
+
+        // Set different timezone - cache should be cleared
+        String newTimezone = "America/New_York";
+        globalConfig.setTimeZone(newTimezone);
+
+        // Get ZoneId - should return new timezone
+        ZoneId secondZoneId = globalConfig.getZoneId();
+        assertThat(secondZoneId.toString(), is(newTimezone));
+        assertThat(secondZoneId, is(not(firstZoneId)));
+    }
+
+    @Test
+    void testSetTimeZoneClearsCacheOnInvalidTimezone() {
+        // Set valid timezone first
+        String validTimezone = "Europe/Berlin";
+        globalConfig.setTimeZone(validTimezone);
+
+        // Get ZoneId to populate cache
+        ZoneId firstZoneId = globalConfig.getZoneId();
+        assertThat(firstZoneId.toString(), is(validTimezone));
+
+        // Set invalid timezone - cache should be cleared and fallback to system default
+        String invalidTimezone = "Invalid/Timezone";
+        globalConfig.setTimeZone(invalidTimezone);
+
+        // Get ZoneId - should return system default
+        ZoneId secondZoneId = globalConfig.getZoneId();
+        assertThat(secondZoneId, is(ZoneId.systemDefault()));
+    }
+
+    @Test
+    void testSetTimeZoneToNull() {
+        // Set valid timezone first
+        String validTimezone = "Europe/Berlin";
+        globalConfig.setTimeZone(validTimezone);
+        ZoneId firstZoneId = globalConfig.getZoneId();
+        assertThat(firstZoneId.toString(), is(validTimezone));
+
+        // Set timezone to null - should clear cache
+        globalConfig.setTimeZone(null);
+
+        // Verify timezone getter returns null
+        assertThat(globalConfig.getTimeZone(), is(nullValue()));
+
+        // getZoneId() with null timezone should throw NPE (ZoneId.of(null) behavior)
+        assertThrows(NullPointerException.class, () -> globalConfig.getZoneId());
+    }
+
+    @Test
+    void testSetTimeZoneToEmptyString() {
+        // Set valid timezone first
+        String validTimezone = "Europe/Berlin";
+        globalConfig.setTimeZone(validTimezone);
+        ZoneId firstZoneId = globalConfig.getZoneId();
+        assertThat(firstZoneId.toString(), is(validTimezone));
+
+        // Set timezone to empty string - should clear cache and fallback to system default
+        String emptyTimezone = "";
+        globalConfig.setTimeZone(emptyTimezone);
+
+        // Get ZoneId - should return system default since empty string is invalid
+        ZoneId secondZoneId = globalConfig.getZoneId();
+        assertThat(secondZoneId, is(ZoneId.systemDefault()));
+
+        // Verify timezone getter returns empty string
+        assertThat(globalConfig.getTimeZone(), is(emptyTimezone));
+    }
 }
