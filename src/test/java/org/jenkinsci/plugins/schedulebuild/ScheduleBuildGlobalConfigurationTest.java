@@ -84,11 +84,15 @@ class ScheduleBuildGlobalConfigurationTest {
 
     @Test
     void testDoCheckTimeZone() {
-        globalConfig.setTimeZone("invalid time zone");
+        // Test that setting valid timezones works correctly
+        globalConfig.setTimeZone("Europe/Berlin");
         ZoneId timeZoneBefore = globalConfig.getZoneId();
-        globalConfig.setTimeZone("Another invalid time zone");
+        assertThat(timeZoneBefore.toString(), is("Europe/Berlin"));
+
+        globalConfig.setTimeZone("America/New_York");
         ZoneId timeZoneAfter = globalConfig.getZoneId();
-        assertThat(timeZoneBefore, is(timeZoneAfter));
+        assertThat(timeZoneAfter.toString(), is("America/New_York"));
+        assertThat(timeZoneBefore, is(not(timeZoneAfter)));
     }
 
     @Test
@@ -175,7 +179,7 @@ class ScheduleBuildGlobalConfigurationTest {
     }
 
     @Test
-    void testSetTimeZoneClearsCacheOnInvalidTimezone() {
+    void testSetTimeZoneClearsCacheOnValidChange() {
         // Set valid timezone first
         String validTimezone = "Europe/Berlin";
         globalConfig.setTimeZone(validTimezone);
@@ -184,51 +188,68 @@ class ScheduleBuildGlobalConfigurationTest {
         ZoneId firstZoneId = globalConfig.getZoneId();
         assertThat(firstZoneId.toString(), is(validTimezone));
 
-        // Set invalid timezone - cache should be cleared and fallback to system default
+        // Set different valid timezone - cache should be cleared
+        String newValidTimezone = "America/New_York";
+        globalConfig.setTimeZone(newValidTimezone);
+
+        // Get ZoneId - should return new timezone
+        ZoneId secondZoneId = globalConfig.getZoneId();
+        assertThat(secondZoneId.toString(), is(newValidTimezone));
+        assertThat(secondZoneId, is(not(firstZoneId)));
+    }
+
+    @Test
+    void testDoCheckTimeZoneWithNull() {
+        // Form validation should return error for null timezone
+        FormValidation result = globalConfig.doCheckTimeZone(null);
+        assertThat(result.kind, is(FormValidation.Kind.ERROR));
+        assertThat(result.getMessage(), containsString("Timezone cannot be null, empty, or whitespace"));
+    }
+
+    @Test
+    void testDoCheckTimeZoneWithEmptyString() {
+        // Form validation should return error for empty timezone
+        FormValidation result = globalConfig.doCheckTimeZone("");
+        assertThat(result.kind, is(FormValidation.Kind.ERROR));
+        assertThat(result.getMessage(), containsString("Timezone cannot be null, empty, or whitespace"));
+    }
+
+    @Test
+    void testDoCheckTimeZoneWithWhitespace() {
+        // Form validation should return error for whitespace-only timezone
+        FormValidation result = globalConfig.doCheckTimeZone("   ");
+        assertThat(result.kind, is(FormValidation.Kind.ERROR));
+        assertThat(result.getMessage(), containsString("Timezone cannot be null, empty, or whitespace"));
+    }
+
+    @Test
+    void testDoCheckTimeZoneWithInvalidTimezone() {
+        // Form validation should return error for invalid timezone
         String invalidTimezone = "Invalid/Timezone";
-        globalConfig.setTimeZone(invalidTimezone);
-
-        // Get ZoneId - should return system default
-        ZoneId secondZoneId = globalConfig.getZoneId();
-        assertThat(secondZoneId, is(ZoneId.systemDefault()));
+        FormValidation result = globalConfig.doCheckTimeZone(invalidTimezone);
+        assertThat(result.kind, is(FormValidation.Kind.ERROR));
+        assertThat(result.getMessage(), containsString("Invalid timezone: " + invalidTimezone));
     }
 
     @Test
-    void testSetTimeZoneToNull() {
-        // Set valid timezone first
-        String validTimezone = "Europe/Berlin";
-        globalConfig.setTimeZone(validTimezone);
-        ZoneId firstZoneId = globalConfig.getZoneId();
-        assertThat(firstZoneId.toString(), is(validTimezone));
-
-        // Set timezone to null - should clear cache
-        globalConfig.setTimeZone(null);
-
-        // Verify timezone getter returns null
-        assertThat(globalConfig.getTimeZone(), is(nullValue()));
-
-        // getZoneId() with null timezone should throw NPE (ZoneId.of(null) behavior)
-        assertThrows(NullPointerException.class, () -> globalConfig.getZoneId());
+    void testDoCheckTimeZoneWithValidTimezone() {
+        // Form validation should return OK for valid timezone
+        FormValidation result = globalConfig.doCheckTimeZone("Europe/Berlin");
+        assertThat(result.kind, is(FormValidation.Kind.OK));
     }
 
     @Test
-    void testSetTimeZoneToEmptyString() {
-        // Set valid timezone first
-        String validTimezone = "Europe/Berlin";
-        globalConfig.setTimeZone(validTimezone);
-        ZoneId firstZoneId = globalConfig.getZoneId();
-        assertThat(firstZoneId.toString(), is(validTimezone));
+    void testSetTimeZoneTrimsWhitespace() {
+        // Setting timezone with leading/trailing whitespace should trim it
+        String timezoneWithWhitespace = "  Europe/Berlin  ";
+        globalConfig.setTimeZone(timezoneWithWhitespace);
 
-        // Set timezone to empty string - should clear cache and fallback to system default
-        String emptyTimezone = "";
-        globalConfig.setTimeZone(emptyTimezone);
+        // Verify it was trimmed
+        assertThat(globalConfig.getTimeZone(), is("Europe/Berlin"));
 
-        // Get ZoneId - should return system default since empty string is invalid
-        ZoneId secondZoneId = globalConfig.getZoneId();
-        assertThat(secondZoneId, is(ZoneId.systemDefault()));
-
-        // Verify timezone getter returns empty string
-        assertThat(globalConfig.getTimeZone(), is(emptyTimezone));
+        // Verify it works correctly
+        ZoneId zoneId = globalConfig.getZoneId();
+        assertThat(zoneId.toString(), is("Europe/Berlin"));
     }
 
     @Test

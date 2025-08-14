@@ -126,7 +126,9 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @DataBoundSetter
     public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
+        // Trim whitespace for convenience, but don't validate here
+        // Validation should be done via doCheckTimeZone() for UI feedback
+        this.timeZone = (timeZone != null) ? timeZone.trim() : null;
         // Clear cache when timezone changes
         cachedZoneId = null;
         cachedTimeZoneString = null;
@@ -179,11 +181,23 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         Jenkins.get()
                 .checkAnyPermission(
                         Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
-        ZoneId zone = ZoneId.of(value);
-        if (StringUtils.equals(zone.getId(), value)) {
-            return FormValidation.ok();
-        } else {
-            return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_TimeZoneError());
+
+        // Check for null, empty, or whitespace-only values
+        if (value == null || value.trim().isEmpty()) {
+            return FormValidation.error("Timezone cannot be null, empty, or whitespace");
+        }
+
+        // Validate that it's a valid timezone
+        try {
+            ZoneId zone = ZoneId.of(value.trim());
+            // Additional check to ensure the timezone string is normalized
+            if (StringUtils.equals(zone.getId(), value.trim())) {
+                return FormValidation.ok();
+            } else {
+                return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_TimeZoneError());
+            }
+        } catch (DateTimeException e) {
+            return FormValidation.error("Invalid timezone: " + value);
         }
     }
 
