@@ -32,6 +32,16 @@ import org.kohsuke.stapler.verb.POST;
 @Extension
 @Symbol("scheduleBuild")
 public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
+
+    public static ScheduleBuildGlobalConfiguration get() {
+        final ScheduleBuildGlobalConfiguration configuration =
+                GlobalConfiguration.all().get(ScheduleBuildGlobalConfiguration.class);
+        if (configuration == null) {
+            throw new IllegalStateException(
+                    "[BUG] No configuration registered, make sure not running on an agent or that Jenkins has started properly.");
+        }
+        return configuration;
+    }
     // defaultScheduleTime is a misuse of a Date object.  Used for the
     // time portion (hours, minutes, seconds, etc.) while the date
     // portion is ignored.
