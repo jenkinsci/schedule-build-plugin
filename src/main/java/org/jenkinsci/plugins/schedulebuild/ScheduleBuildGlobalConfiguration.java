@@ -132,7 +132,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             return ZoneId.systemDefault();
         }
     }
-    
+
     /**
      * Get the default schedule local time.
      * @return the default schedule local time

@@ -16,7 +16,6 @@ import hudson.util.FormValidation;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import org.jenkinsci.plugins.schedulebuild.ScheduleBuildUserProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -141,7 +140,7 @@ class ScheduleBuildActionTest {
         HttpResponse validation = scheduleBuildAction.doNext("01-01-2020 01:00:00", project);
         assertThat(validation, is(instanceOf(HttpRedirect.class)));
     }
-    
+
     @Test
     void testGetTimeZone() {
         // Should return the system default timezone when no user preference is set
@@ -149,14 +148,14 @@ class ScheduleBuildActionTest {
         assertThat(timeZone, is(not(nullValue())));
         assertThat(timeZone, is(not("")));
     }
-    
+
     @Test
     void testUserTimeZonePreference() throws Exception {
         // Create a user with a custom timezone preference
         User testUser = User.get("testuser");
         ScheduleBuildUserProperty userProperty = new ScheduleBuildUserProperty("Europe/Berlin");
         testUser.addProperty(userProperty);
-        
+
         // Test that the user property works correctly
         assertThat(userProperty.getTimeZone(), is("Europe/Berlin"));
         assertThat(userProperty.hasCustomTimeZone(), is(true));

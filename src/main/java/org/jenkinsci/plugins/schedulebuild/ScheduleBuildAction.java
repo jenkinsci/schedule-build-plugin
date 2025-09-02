@@ -99,7 +99,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         }
         return zdt;
     }
-    
+
     /**
      * Get the default schedule time object using the user's preferred timezone if available,
      * otherwise falling back to the global setting.
@@ -113,8 +113,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     public String getMinDate() {
         ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime zonedNow =
-                now.withZoneSameInstant(getUserTimeZone());
+        ZonedDateTime zonedNow = now.withZoneSameInstant(getUserTimeZone());
         return zonedNow.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 
@@ -128,9 +127,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime ddate;
         try {
-            ddate = parseDateTime(value.trim())
-                    .atZone(getUserTimeZone())
-                    .plusSeconds(SECURITY_MARGIN);
+            ddate = parseDateTime(value.trim()).atZone(getUserTimeZone()).plusSeconds(SECURITY_MARGIN);
         } catch (DateTimeParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
         }
@@ -156,8 +153,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
         final String time = date.trim();
         try {
-            ddate = parseDateTime(time)
-                    .atZone(getUserTimeZone());
+            ddate = parseDateTime(time).atZone(getUserTimeZone());
         } catch (DateTimeParseException ex) {
             LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
             return HttpResponses.redirectTo("error");
@@ -200,7 +196,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     public String getTimeZone() {
         return getUserTimeZone().getId();
     }
-    
+
     /**
      * Get the timezone to use for schedule builds.
      * Returns the user's preferred timezone if set, otherwise falls back to the global setting.

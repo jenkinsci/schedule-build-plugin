@@ -39,7 +39,7 @@ class ScheduleBuildUserPropertyTest {
     void testSetCustomTimeZone() {
         String customTimeZone = "Europe/Berlin";
         userProperty.setTimeZone(customTimeZone);
-        
+
         assertThat(userProperty.getTimeZone(), is(customTimeZone));
         assertThat(userProperty.hasCustomTimeZone(), is(true));
         assertThat(userProperty.getZoneId(), is(ZoneId.of(customTimeZone)));
@@ -48,7 +48,7 @@ class ScheduleBuildUserPropertyTest {
     @Test
     void testSetEmptyTimeZone() {
         userProperty.setTimeZone("");
-        
+
         assertThat(userProperty.getTimeZone(), is(""));
         assertThat(userProperty.hasCustomTimeZone(), is(false));
         // Should fall back to global setting
@@ -58,7 +58,7 @@ class ScheduleBuildUserPropertyTest {
     @Test
     void testSetNullTimeZone() {
         userProperty.setTimeZone(null);
-        
+
         assertThat(userProperty.getTimeZone(), is(nullValue()));
         assertThat(userProperty.hasCustomTimeZone(), is(false));
         // Should fall back to global setting
@@ -69,7 +69,7 @@ class ScheduleBuildUserPropertyTest {
     void testInvalidTimeZone() {
         String invalidTimeZone = "Invalid/Timezone";
         userProperty.setTimeZone(invalidTimeZone);
-        
+
         // Should fall back to global setting even with invalid timezone
         assertThat(userProperty.getZoneId(), is(not(nullValue())));
     }
@@ -77,15 +77,15 @@ class ScheduleBuildUserPropertyTest {
     @Test
     void testDescriptorValidation() {
         ScheduleBuildUserProperty.DescriptorImpl descriptor = new ScheduleBuildUserProperty.DescriptorImpl();
-        
+
         // Valid timezone
         FormValidation validResult = descriptor.doCheckTimeZone("Europe/Berlin");
         assertThat(validResult.kind, is(FormValidation.Kind.OK));
-        
+
         // Empty timezone (use global setting)
         FormValidation emptyResult = descriptor.doCheckTimeZone("");
         assertThat(emptyResult.kind, is(FormValidation.Kind.OK));
-        
+
         // Invalid timezone
         FormValidation invalidResult = descriptor.doCheckTimeZone("Invalid/Timezone");
         assertThat(invalidResult.kind, is(FormValidation.Kind.ERROR));
@@ -95,14 +95,14 @@ class ScheduleBuildUserPropertyTest {
     void testDescriptorTimeZoneItems() {
         ScheduleBuildUserProperty.DescriptorImpl descriptor = new ScheduleBuildUserProperty.DescriptorImpl();
         var items = descriptor.doFillTimeZoneItems();
-        
+
         assertThat(items, is(not(nullValue())));
         assertThat(items.size(), is(greaterThan(0)));
-        
+
         // First item should be "Use Global Setting"
         assertThat(items.get(0).name, is("Use Global Setting"));
         assertThat(items.get(0).value, is(""));
-        
+
         // Should contain common timezones
         boolean hasEuropeBerlin = false;
         boolean hasUTC = false;
