@@ -132,6 +132,14 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             return ZoneId.systemDefault();
         }
     }
+    
+    /**
+     * Get the default schedule local time.
+     * @return the default schedule local time
+     */
+    public LocalTime getDefaultScheduleLocalTime() {
+        return defaultScheduleLocalTime;
+    }
 
     private DateTimeFormatter getTimeFormatter() {
         return DateTimeFormatter.ofPattern(TIME_PATTERN);
