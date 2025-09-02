@@ -40,6 +40,23 @@ the system time zone.
 
 ![](docs/images/Schedule_Timezone.png)
 
+### User-Specific Timezone Configuration
+
+Users can now choose to use their personal timezone setting from Jenkins core
+for schedule builds, instead of the global system setting. This allows users
+to schedule builds in their local timezone while maintaining the global system
+configuration for other users.
+
+To enable personal timezone for schedule builds:
+1. Go to your user profile page
+2. Click on "Schedule Build Preferences" in the left sidebar
+3. Check the "Use Personal Time Zone" checkbox
+4. Click "Save"
+
+If you don't enable personal timezone, the plugin will use the global system
+timezone setting. The personal timezone setting respects your Jenkins core
+user timezone configuration.
+
 ## Configuration as code
 
 This plugin supports configuration as code
@@ -51,6 +68,10 @@ unclassified:
     defaultStartTime: "11:00:00 PM"
     timeZone: "Europe/Paris"
 ```
+
+**Note**: The global timezone setting can be overridden by individual users
+through their personal preferences. User-specific timezone settings are not
+configurable through configuration as code.
 
 ## Release Notes
 
