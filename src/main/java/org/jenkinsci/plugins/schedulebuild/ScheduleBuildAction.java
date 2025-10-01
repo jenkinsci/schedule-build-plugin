@@ -5,8 +5,12 @@ import hudson.model.Descriptor.FormException;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.ParametersDefinitionProperty;
+import hudson.model.User;
 import hudson.util.FormValidation;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -88,7 +92,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     public ZonedDateTime getDefaultDateObject() {
-        ZonedDateTime zdt = ScheduleBuildGlobalConfiguration.get().getDefaultScheduleTimeObject();
+        ZonedDateTime zdt = getDefaultScheduleTimeObject();
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(zdt)) {
             zdt = zdt.plusDays(1);
@@ -96,10 +100,20 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         return zdt;
     }
 
+    /**
+     * Get the default schedule time object using the user's preferred timezone if available,
+     * otherwise falling back to the global setting.
+     * @return the default schedule time in the appropriate timezone
+     */
+    private ZonedDateTime getDefaultScheduleTimeObject() {
+        ZoneId userZoneId = getUserTimeZone();
+        LocalTime defaultTime = ScheduleBuildGlobalConfiguration.get().getDefaultScheduleLocalTime();
+        return defaultTime.atDate(LocalDate.now()).atZone(userZoneId);
+    }
+
     public String getMinDate() {
         ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime zonedNow =
-                now.withZoneSameInstant(ScheduleBuildGlobalConfiguration.get().getZoneId());
+        ZonedDateTime zonedNow = now.withZoneSameInstant(getUserTimeZone());
         return zonedNow.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 
@@ -113,9 +127,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime ddate;
         try {
-            ddate = parseDateTime(value.trim())
-                    .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId())
-                    .plusSeconds(SECURITY_MARGIN);
+            ddate = parseDateTime(value.trim()).atZone(getUserTimeZone()).plusSeconds(SECURITY_MARGIN);
         } catch (DateTimeParseException ex) {
             return FormValidation.error(Messages.ScheduleBuildAction_ParsingError());
         }
@@ -141,8 +153,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
         final String time = date.trim();
         try {
-            ddate = parseDateTime(time)
-                    .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId());
+            ddate = parseDateTime(time).atZone(getUserTimeZone());
         } catch (DateTimeParseException ex) {
             LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
             return HttpResponses.redirectTo("error");
@@ -183,6 +194,23 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     @Restricted(NoExternalUse.class)
     public String getTimeZone() {
-        return ScheduleBuildGlobalConfiguration.get().getTimeZone();
+        return getUserTimeZone().getId();
+    }
+
+    /**
+     * Get the timezone to use for schedule builds.
+     * Returns the user's preferred timezone if set, otherwise falls back to the global setting.
+     * @return the ZoneId to use for schedule builds
+     */
+    private ZoneId getUserTimeZone() {
+        User currentUser = User.current();
+        if (currentUser != null) {
+            ScheduleBuildUserProperty userProperty = currentUser.getProperty(ScheduleBuildUserProperty.class);
+            if (userProperty != null && userProperty.hasCustomTimeZone()) {
+                return userProperty.getZoneId();
+            }
+        }
+        // Fall back to global setting
+        return ScheduleBuildGlobalConfiguration.get().getZoneId();
     }
 }
