@@ -101,8 +101,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
     }
 
     /**
-     * Get the default schedule time object using the user's preferred timezone if
-     * available,
+     * Get the default schedule time object using the user's preferred timezone if available,
      * otherwise falling back to the global setting.
      *
      * @return the default schedule time in the appropriate timezone
@@ -207,8 +206,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     /**
      * Get the timezone to use for schedule builds.
-     * Returns the user's preferred timezone if set, otherwise falls back to the
-     * global setting.
+     * Returns the user's preferred timezone if set, otherwise falls back to the global setting.
      *
      * @return the ZoneId to use for schedule builds
      */
@@ -220,8 +218,7 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
                 return userProperty.getZoneId();
             }
         }
-        // Fall back to global setting, or system default if global config is not
-        // available
+        // Fall back to global setting, or system default if global config is not available
         try {
             return ScheduleBuildGlobalConfiguration.get().getZoneId();
         } catch (IllegalStateException e) {

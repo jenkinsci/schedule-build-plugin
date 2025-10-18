@@ -12,8 +12,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * User property to store schedule build timezone preferences.
- * Allows users to choose between using Jenkins core personal timezone or global
- * timezone setting.
+ * Allows users to choose between using Jenkins core personal timezone or global timezone setting.
  */
 public class ScheduleBuildUserProperty extends UserProperty {
 
@@ -46,19 +45,17 @@ public class ScheduleBuildUserProperty extends UserProperty {
 
     /**
      * Get the ZoneId for the user's preferred timezone.
-     * Uses system default timezone if personal timezone is enabled, otherwise falls
-     * back to global setting.
+     * Uses system default timezone if personal timezone is enabled, otherwise falls back to global setting.
      *
      * @return the ZoneId to use for schedule builds
      */
     public ZoneId getZoneId() {
         if (usePersonalTimeZone) {
-            // Use system default timezone as a proxy for user's personal timezone
-            // This respects the user's system timezone setting
+            // Use system default timezone as a proxy for user's personal timezone.
+            // This respects the user's system timezone setting.
             return ZoneId.systemDefault();
         }
-        // Fall back to global setting, or system default if global config is not
-        // available
+        // Fall back to global setting, or system default if global config is not available
         try {
             return ScheduleBuildGlobalConfiguration.get().getZoneId();
         } catch (IllegalStateException e) {
