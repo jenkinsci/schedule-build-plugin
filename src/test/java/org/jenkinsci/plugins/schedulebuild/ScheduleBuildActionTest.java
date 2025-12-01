@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.schedulebuild;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
@@ -10,8 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.FreeStyleProject;
+import hudson.model.User;
 import hudson.util.FormValidation;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,5 +140,26 @@ class ScheduleBuildActionTest {
     void testDoNextDateInPast() {
         HttpResponse validation = scheduleBuildAction.doNext("01-01-2020 01:00:00", project);
         assertThat(validation, is(instanceOf(HttpRedirect.class)));
+    }
+
+    @Test
+    void testGetTimeZone() {
+        // Should return the system default timezone when no user preference is set
+        String timeZone = scheduleBuildAction.getTimeZone();
+        assertThat(timeZone, is(not(nullValue())));
+        assertThat(timeZone, is(not("")));
+    }
+
+    @Test
+    void testUserTimeZonePreference() throws Exception {
+        // Create a user with a personal timezone preference
+        User testUser = User.get("testuser");
+        ScheduleBuildUserProperty userProperty = new ScheduleBuildUserProperty(true);
+        testUser.addProperty(userProperty);
+
+        // Test that the user property works correctly
+        assertThat(userProperty.isUsePersonalTimeZone(), is(true));
+        assertThat(userProperty.hasCustomTimeZone(), is(true));
+        assertThat(userProperty.getZoneId(), is(ZoneId.systemDefault()));
     }
 }
