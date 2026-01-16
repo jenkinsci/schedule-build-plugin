@@ -13,9 +13,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -31,6 +33,8 @@ import org.kohsuke.stapler.verb.POST;
 @Extension
 @Symbol("scheduleBuild")
 public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
+
+    private SortedSet<ScheduledRun> scheduledRuns = null;
 
     public static ScheduleBuildGlobalConfiguration get() {
         final ScheduleBuildGlobalConfiguration configuration =
@@ -65,6 +69,13 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         defaultStartTime = "22:00:00";
         load();
         defaultScheduleLocalTime = LocalTime.parse(defaultStartTime, getTimeFormatter());
+    }
+
+    public SortedSet<ScheduledRun> getScheduledRuns() {
+        if (scheduledRuns == null) {
+            scheduledRuns = Collections.synchronizedSortedSet(new TreeSet<>());
+        }
+        return scheduledRuns;
     }
 
     @Override

@@ -1,9 +1,10 @@
 package org.jenkinsci.plugins.schedulebuild;
 
 import hudson.model.Action;
-import hudson.model.Descriptor.FormException;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.util.FormValidation;
 import java.time.LocalDateTime;
@@ -11,22 +12,28 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.management.Badge;
+import jenkins.model.ParameterizedJobMixIn;
+import jenkins.util.TimeDuration;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.jenkins.ui.icon.IconSpec;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.interceptor.RequirePOST;
+import org.kohsuke.stapler.verb.POST;
 
-public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
+public class ScheduleBuildAction implements Action, IconSpec {
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildAction.class.getName());
 
@@ -56,31 +63,17 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
 
     @Override
     public String getIconClassName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable()
-                ? "symbol-calendar-outline plugin-ionicons-api"
-                : null;
+        return "symbol-calendar-outline plugin-ionicons-api";
     }
 
     @Override
     public String getDisplayName() {
-        return target.hasPermission(Job.BUILD) && this.target.isBuildable()
-                ? Messages.ScheduleBuildAction_DisplayName()
-                : null;
+        return Messages.ScheduleBuildAction_DisplayName();
     }
 
     @Override
     public String getUrlName() {
         return "schedule";
-    }
-
-    public boolean schedule(StaplerRequest2 req, JSONObject formData) throws FormException {
-        return true;
-    }
-
-    @Override
-    public Object getTarget() {
-        target.checkPermission(Job.BUILD);
-        return this;
     }
 
     public String getDefaultDate() {
@@ -130,30 +123,148 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
         return quietperiod;
     }
 
-    @RequirePOST
-    public HttpResponse doNext(@QueryParameter String date, @AncestorInPath Item item) {
-        if (item == null) {
-            return FormValidation.ok();
+    public Badge getBadge() {
+        List<ScheduledRun> plannedBuilds = getPlannedBuilds();
+        if (plannedBuilds.isEmpty()) {
+            return null;
         }
-        // User requesting a build needs permission to start the build
-        item.checkPermission(Item.BUILD);
-        ZonedDateTime ddate, now = ZonedDateTime.now();
+        return new Badge(
+                Integer.toString(plannedBuilds.size()),
+                Messages.ScheduleBuildAction_BadgeTooltip(plannedBuilds.size()),
+                Badge.Severity.INFO);
+    }
 
-        final String time = date.trim();
+    @POST
+    public void doCancelBuild(@QueryParameter String id, StaplerResponse2 rsp) {
+        target.checkPermission(Item.CANCEL);
         try {
-            ddate = parseDateTime(time)
-                    .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId());
-        } catch (DateTimeParseException ex) {
-            LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
-            return HttpResponses.redirectTo("error");
+            ScheduledRun toRemove = null;
+            for (ScheduledRun sr : ScheduleBuildGlobalConfiguration.get().getScheduledRuns()) {
+                if (sr.getId().equals(id) && sr.getJob().equals(target.getFullName())) {
+                    toRemove = sr;
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                ScheduleBuildGlobalConfiguration.get().getScheduledRuns().remove(toRemove);
+                ScheduleBuildGlobalConfiguration.get().save();
+            }
+            rsp.sendRedirect2("./planned");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        quietperiod = ChronoUnit.SECONDS.between(now, ddate);
-        LOGGER.log(Level.FINER, () -> "Quietperiod: " + quietperiod);
-        if (quietperiod + ScheduleBuildAction.SECURITY_MARGIN < 0) { // 120 sec security margin
-            LOGGER.log(Level.INFO, () -> "Error security margin" + quietperiod);
-            return HttpResponses.redirectTo("error");
+    }
+
+    @POST
+    public void doBuild(StaplerRequest2 req, StaplerResponse2 rsp) {
+        target.checkPermission(Item.BUILD);
+        try {
+            JSONObject formData = req.getSubmittedForm();
+            String date = formData.getString("date");
+            boolean scheduleViaCron = formData.has("scheduleViaCron");
+
+            ZonedDateTime startDateTime, now = ZonedDateTime.now();
+
+            final String time = date.trim();
+            try {
+                startDateTime = parseDateTime(time)
+                        .atZone(ScheduleBuildGlobalConfiguration.get().getZoneId());
+            } catch (DateTimeParseException ex) {
+                LOGGER.log(Level.INFO, ex, () -> "Error parsing " + time);
+                rsp.sendRedirect2("error");
+                return;
+            }
+
+            long delay = ChronoUnit.SECONDS.between(now, startDateTime);
+            LOGGER.log(Level.FINER, () -> "Quietperiod: " + delay);
+            if (delay + ScheduleBuildAction.SECURITY_MARGIN < 0) { // 120 sec security margin
+                LOGGER.log(Level.INFO, () -> "Error security margin " + delay);
+                rsp.sendRedirect2("error");
+                return;
+            }
+
+            if (!scheduleViaCron) {
+                TimeDuration quietPeriod = new TimeDuration(Math.max(0, delay) * 1000);
+                new ParameterizedJobMixIn() {
+                    @Override
+                    protected Job<?, ?> asJob() {
+                        return target;
+                    }
+                }.doBuild(req, rsp, quietPeriod);
+                return;
+            }
+            String id = UUID.randomUUID().toString();
+            List<ParameterValue> values = new ArrayList<>();
+            JSONObject scheduleViaCronObject = formData.getJSONObject("scheduleViaCron");
+            boolean triggerOnMissed = scheduleViaCronObject.getBoolean("triggerOnMissed");
+
+            if (target instanceof ParameterizedJobMixIn.ParameterizedJob<?, ?> pj) {
+                if (pj.isParameterized()) {
+
+                    Object parameter = formData.get("parameter");
+
+                    if (parameter != null) {
+                        ParametersDefinitionProperty prop = target.getProperty(ParametersDefinitionProperty.class);
+                        JSONArray a = JSONArray.fromObject(parameter);
+
+                        for (Object o : a) {
+                            JSONObject jo = (JSONObject) o;
+                            String name = jo.getString("name");
+
+                            ParameterDefinition d = prop.getParameterDefinition(name);
+                            if (d == null) throw new IllegalArgumentException("No such parameter definition: " + name);
+                            ParameterValue parameterValue = d.createValue(req, jo);
+                            if (parameterValue != null) {
+                                values.add(parameterValue);
+                            } else {
+                                throw new IllegalArgumentException("Cannot retrieve the parameter value: " + name);
+                            }
+                        }
+                    }
+                }
+            }
+
+            ScheduledRun sr = new ScheduledRun(
+                    id, target.getFullName(), startDateTime, values, triggerOnMissed, new ScheduledBuildCause());
+
+            ScheduleBuildGlobalConfiguration.get().getScheduledRuns().add(sr);
+            ScheduleBuildGlobalConfiguration.get().save();
+
+            rsp.sendRedirect2("..");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return HttpResponses.forwardToView(this, "redirect");
+    }
+
+    public boolean hasPlannedBuilds() {
+        for (ScheduledRun sr : ScheduleBuildGlobalConfiguration.get().getScheduledRuns()) {
+            if (sr.getJob().equals(target.getFullName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<ScheduledRun> getPlannedBuilds() {
+        return ScheduleBuildGlobalConfiguration.get().getScheduledRuns().stream()
+                .filter(r -> r.getJob().equals(target.getFullName()))
+                .toList();
+    }
+
+    public boolean isParameterized() {
+        if (target instanceof ParameterizedJobMixIn.ParameterizedJob<?, ?> pj) {
+            return pj.isParameterized();
+        }
+        return false;
+    }
+
+    public List<ParameterDefinition> getParameterDefinitions() {
+        if (target instanceof ParameterizedJobMixIn.ParameterizedJob<?, ?> pj) {
+            if (pj.isParameterized()) {
+                return target.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions();
+            }
+        }
+        return List.of();
     }
 
     private LocalDateTime parseDateTime(String time) {
@@ -167,13 +278,6 @@ public class ScheduleBuildAction implements Action, StaplerProxy, IconSpec {
             }
         }
         throw exception;
-    }
-
-    public boolean isJobParameterized() {
-        ParametersDefinitionProperty paramDefinitions = target.getProperty(ParametersDefinitionProperty.class);
-        return paramDefinitions != null
-                && paramDefinitions.getParameterDefinitions() != null
-                && paramDefinitions.getParameterDefinitions().size() > 0;
     }
 
     @Restricted(NoExternalUse.class)

@@ -1,10 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:f="/lib/form">
+    ${h.checkPermission(it.owner, it.owner.BUILD)}
     <l:layout title="Test" norefresh="true">
         <st:include page="sidepanel.jelly" it="${it.owner}" />
         <l:main-panel>
             <h1>${%Project} ${it.owner.name}</h1>
-            <f:form name="schedule" action="next" method="post">
+            <f:form name="schedule" action="build" method="post">
                 <f:entry title="${%BuildOn} (${it.dateTimeFormatting}):" help="/plugin/schedule-build/help/help-date.html" description="Timezone: ${it.timeZone}">
                     <div id="schedule-build-flatpickr" data-now="${it.minDate}">
                       <f:textbox id="schedule-build-input" name="date" value="${it.defaultDate}"
@@ -15,9 +16,31 @@
                       </button>
                     </div>
                 </f:entry>
-                <f:entry>
-                    <f:submit value="${%Schedule}" id="schedule-build-button"/>
-                </f:entry>
+                <f:optionalBlock title="${%Schedule via Cron}" field="scheduleViaCron" help="/plugin/schedule-build/help/help-scheduleViaCron.html">
+                  <f:entry title="${%Trigger on missed}" field="triggerOnMissed" help="/plugin/schedule-build/help/help-triggerOnMissed.html">
+                    <f:checkbox/>
+                  </f:entry>
+                </f:optionalBlock>
+                <j:if test="${it.owner.parameterized}">
+                  <f:section title="${%Parameters}">
+                    <j:forEach var="parameterDefinition" items="${it.parameterDefinitions}">
+                      <j:set var="escapeEntryTitleAndDescription" value="true"/>
+                      <st:include it="${parameterDefinition}"
+                                  page="${parameterDefinition.descriptor.valuePage}" />
+                    </j:forEach>
+                  </f:section>
+                </j:if>
+                <f:bottomButtonBar>
+                  <input type="hidden" name="statusCode" value="303" />
+                  <input type="hidden" name="redirectTo" value="." />
+                  <button class="jenkins-button jenkins-button--primary jenkins-!-build-color">
+                      <l:icon src="symbol-play" />
+                      ${%Schedule}
+                  </button>
+                  <a href="./.." class="jenkins-button">
+                      ${%Cancel}
+                  </a>
+                </f:bottomButtonBar>
             </f:form>
             <st:adjunct includes="io.jenkins.plugins.flatpickr"/>
             <st:adjunct includes="org.jenkinsci.plugins.schedulebuild.scheduleBuild"/>
