@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -22,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.interceptor.RequirePOST;
@@ -163,7 +163,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
                 .checkAnyPermission(
                         Jenkins.ADMINISTER, Jenkins.SYSTEM_READ); // Admin permission required for global config
         ZoneId zone = ZoneId.of(value);
-        if (StringUtils.equals(zone.getId(), value)) {
+        if (Objects.equals(zone.getId(), value)) {
             return FormValidation.ok();
         } else {
             return FormValidation.error(Messages.ScheduleBuildGlobalConfiguration_TimeZoneError());
