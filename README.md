@@ -54,19 +54,23 @@ quiet period to reach second precision.
 Multiple builds can be scheduled for the same job with identical parameters at different times when they at least differ by a minute.
 The scheduled builds are persistent and will survive Jenkins restarts.
 
-If a build is missed because Jenkins was down, it will be started immediately if the option `Trigger on missed` is selected. Without
-that option, the build will be skipped. There is a grace period of 2 minutes to still trigger the build after the scheduled time.
+If a build is missed because Jenkins was down, it will be started immediately if the option `Trigger 
+on missed` is set. Without that option, the build will be skipped. There is a configurable grace 
+period to still trigger the build after the scheduled time.
 
 Builds scheduled via cron have a dedicated Cause.
+
+Renames or moves of jobs are supported. The scheduled builds will follow the job.
 
 ## Configure Schedule Build Plugin
 
 The configuration of the schedule build plugin is very simple. There are
-only two parameters on the Jenkins system configuration page.
+only three parameters on the Jenkins system configuration page.
 
 The default time which is set when a user wants to schedule a build may
-be configured and time zone used by the plugin, which might differ from
-the system time zone.
+be configured, time zone used by the plugin, which might differ from
+the system time zone and the grace period for missed builds even when `Trigger on missed` 
+is not set.
 
 ![](docs/images/Schedule_Timezone.png)
 
