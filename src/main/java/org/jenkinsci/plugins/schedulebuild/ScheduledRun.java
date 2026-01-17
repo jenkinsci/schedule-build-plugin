@@ -141,4 +141,9 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         ScheduledRun other = (ScheduledRun) obj;
         return id.equals(other.id);
     }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
