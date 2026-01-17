@@ -7,6 +7,8 @@ import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.util.FormValidation;
+import jakarta.servlet.ServletException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -231,7 +233,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
             ScheduleBuildGlobalConfiguration.get().save();
 
             rsp.sendRedirect2("..");
-        } catch (Exception e) {
+        } catch (IOException | ServletException e) {
             throw new RuntimeException(e);
         }
     }

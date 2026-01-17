@@ -9,6 +9,7 @@ import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.TaskListener;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +23,9 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Restricted(NoExternalUse.class)
 public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss v";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
@@ -30,7 +34,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     private final ZonedDateTime time;
     private final List<ParameterValue> values;
     private final boolean triggerOnMissed;
-    private final Cause cause;
+    private final ScheduledBuildCause cause;
 
     public ScheduledRun(
             String id,
@@ -38,7 +42,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
             ZonedDateTime time,
             @NonNull List<ParameterValue> values,
             boolean triggerOnMissed,
-            Cause cause) {
+            ScheduledBuildCause cause) {
         this.id = id;
         this.time = time;
         this.values = values;
@@ -124,5 +128,17 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
             return c;
         }
         return id.compareTo(o.id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ScheduledRun other = (ScheduledRun) obj;
+        return id.equals(other.id);
     }
 }
