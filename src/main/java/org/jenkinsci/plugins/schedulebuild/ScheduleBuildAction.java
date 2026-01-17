@@ -140,16 +140,11 @@ public class ScheduleBuildAction implements Action, IconSpec {
     public void doCancelBuild(@QueryParameter String id, StaplerResponse2 rsp) {
         target.checkPermission(Item.CANCEL);
         try {
-            ScheduledRun toRemove = null;
-            for (ScheduledRun sr : ScheduleBuildGlobalConfiguration.get().getScheduledRuns()) {
+            for (ScheduledRun sr : ScheduledRunManager.getScheduledRuns()) {
                 if (sr.getId().equals(id) && sr.getJob().equals(target.getFullName())) {
-                    toRemove = sr;
+                    ScheduledRunManager.removeScheduledRun(sr);
                     break;
                 }
-            }
-            if (toRemove != null) {
-                ScheduleBuildGlobalConfiguration.get().getScheduledRuns().remove(toRemove);
-                ScheduleBuildGlobalConfiguration.get().save();
             }
             rsp.sendRedirect2("./planned");
         } catch (Exception e) {
@@ -229,8 +224,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
             ScheduledRun sr = new ScheduledRun(
                     id, target.getFullName(), startDateTime, values, triggerOnMissed, new ScheduledBuildCause());
 
-            ScheduleBuildGlobalConfiguration.get().getScheduledRuns().add(sr);
-            ScheduleBuildGlobalConfiguration.get().save();
+            ScheduledRunManager.addScheduledRun(sr);
 
             rsp.sendRedirect2("..");
         } catch (IOException | ServletException e) {
@@ -239,7 +233,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
     }
 
     public boolean hasPlannedBuilds() {
-        for (ScheduledRun sr : ScheduleBuildGlobalConfiguration.get().getScheduledRuns()) {
+        for (ScheduledRun sr : ScheduledRunManager.getScheduledRuns()) {
             if (sr.getJob().equals(target.getFullName())) {
                 return true;
             }
@@ -248,7 +242,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
     }
 
     public List<ScheduledRun> getPlannedBuilds() {
-        return ScheduleBuildGlobalConfiguration.get().getScheduledRuns().stream()
+        return ScheduledRunManager.getScheduledRuns().stream()
                 .filter(r -> r.getJob().equals(target.getFullName()))
                 .toList();
     }

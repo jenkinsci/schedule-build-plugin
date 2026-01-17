@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,13 +25,9 @@ public class SchedulerWorker extends AsyncPeriodicWork {
 
     @Override
     protected void execute(TaskListener listener) throws IOException, InterruptedException {
-        SortedSet<ScheduledRun> scheduledRuns =
-                ScheduleBuildGlobalConfiguration.get().getScheduledRuns();
-        Iterator<ScheduledRun> iterator = scheduledRuns.iterator();
-        boolean removed = false;
+        Set<ScheduledRun> scheduledRuns = ScheduledRunManager.getScheduledRuns();
         ZonedDateTime now = ZonedDateTime.now();
-        while (iterator.hasNext()) {
-            ScheduledRun scheduledRun = iterator.next();
+        for (ScheduledRun scheduledRun : scheduledRuns) {
             LOGGER.log(
                     Level.FINE,
                     () -> "Looking at scheduled run: " + scheduledRun.getJob() + " scheduled for "
@@ -49,8 +44,7 @@ public class SchedulerWorker extends AsyncPeriodicWork {
                                     Level.WARNING,
                                     "Scheduled run for {0} was missed by {1} seconds. It will be skipped.",
                                     new Object[] {scheduledRun.getJob(), -delay});
-                            iterator.remove();
-                            removed = true;
+                            ScheduledRunManager.removeScheduledRun(scheduledRun);
                             continue;
                         }
                         LOGGER.log(
@@ -62,15 +56,11 @@ public class SchedulerWorker extends AsyncPeriodicWork {
                 }
                 LOGGER.log(Level.FINE, () -> "Scheduling run for: " + scheduledRun.getJob());
                 scheduledRun.run(listener, (int) delay);
-                iterator.remove();
-                removed = true;
+                ScheduledRunManager.removeScheduledRun(scheduledRun);
             } else {
                 // Since the set is sorted, we can break early
                 break;
             }
-        }
-        if (removed) {
-            ScheduleBuildGlobalConfiguration.get().save();
         }
     }
 

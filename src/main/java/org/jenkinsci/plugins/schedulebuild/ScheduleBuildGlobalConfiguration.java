@@ -2,8 +2,6 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
-import hudson.model.Item;
-import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.text.ParseException;
@@ -15,11 +13,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -35,8 +31,6 @@ import org.kohsuke.stapler.verb.POST;
 @Extension
 @Symbol("scheduleBuild")
 public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
-
-    private SortedSet<ScheduledRun> scheduledRuns = null;
 
     public static ScheduleBuildGlobalConfiguration get() {
         final ScheduleBuildGlobalConfiguration configuration =
@@ -71,13 +65,6 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         defaultStartTime = "22:00:00";
         load();
         defaultScheduleLocalTime = LocalTime.parse(defaultStartTime, getTimeFormatter());
-    }
-
-    public SortedSet<ScheduledRun> getScheduledRuns() {
-        if (scheduledRuns == null) {
-            scheduledRuns = Collections.synchronizedSortedSet(new TreeSet<>());
-        }
-        return scheduledRuns;
     }
 
     @Override
@@ -198,33 +185,5 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             }
         }
         return items;
-    }
-
-    @Extension
-    public static class ScheduleListener extends ItemListener {
-
-        @Override
-        public void onDeleted(Item item) {
-            ScheduleBuildGlobalConfiguration config = ScheduleBuildGlobalConfiguration.get();
-            SortedSet<ScheduledRun> runs = config.getScheduledRuns();
-            synchronized (runs) {
-                runs.removeIf(scheduledRun -> scheduledRun.getJob().equals(item.getFullName()));
-            }
-            config.save();
-        }
-
-        @Override
-        public void onLocationChanged(Item item, String oldFullName, String newFullName) {
-            ScheduleBuildGlobalConfiguration config = ScheduleBuildGlobalConfiguration.get();
-            SortedSet<ScheduledRun> runs = config.getScheduledRuns();
-            synchronized (runs) {
-                for (ScheduledRun scheduledRun : runs) {
-                    if (scheduledRun.getJob().equals(oldFullName)) {
-                        scheduledRun.setJob(newFullName);
-                    }
-                }
-            }
-            config.save();
-        }
     }
 }
