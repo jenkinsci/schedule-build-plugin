@@ -62,10 +62,6 @@
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins.workflow</groupId>
-      <artifactId>workflow-job</artifactId>
-    </dependency>
     <!-- JCasC test dependency -->
     <dependency>
       <groupId>io.jenkins.configuration-as-code</groupId>

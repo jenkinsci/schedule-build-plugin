@@ -26,7 +26,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String id;
-    private final String job;
+    private String job;
     private final ZonedDateTime time;
     private final List<ParameterValue> values;
     private final boolean triggerOnMissed;
@@ -73,6 +73,10 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
 
     public String getJob() {
         return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
     }
 
     public void run(TaskListener listener, int delay) {

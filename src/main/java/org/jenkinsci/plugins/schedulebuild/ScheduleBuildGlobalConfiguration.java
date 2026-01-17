@@ -2,6 +2,8 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
+import hudson.model.Item;
+import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.text.ParseException;
@@ -196,5 +198,33 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             }
         }
         return items;
+    }
+
+    @Extension
+    public static class ScheduleListener extends ItemListener {
+
+        @Override
+        public void onDeleted(Item item) {
+            ScheduleBuildGlobalConfiguration config = ScheduleBuildGlobalConfiguration.get();
+            SortedSet<ScheduledRun> runs = config.getScheduledRuns();
+            synchronized (runs) {
+                runs.removeIf(scheduledRun -> scheduledRun.getJob().equals(item.getFullName()));
+            }
+            config.save();
+        }
+
+        @Override
+        public void onLocationChanged(Item item, String oldFullName, String newFullName) {
+            ScheduleBuildGlobalConfiguration config = ScheduleBuildGlobalConfiguration.get();
+            SortedSet<ScheduledRun> runs = config.getScheduledRuns();
+            synchronized (runs) {
+                for (ScheduledRun scheduledRun : runs) {
+                    if (scheduledRun.getJob().equals(oldFullName)) {
+                        scheduledRun.setJob(newFullName);
+                    }
+                }
+            }
+            config.save();
+        }
     }
 }
