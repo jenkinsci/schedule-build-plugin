@@ -33,6 +33,7 @@ class ScheduleBuildGlobalConfigurationTest {
         assertThat(globalConfig, is(not(nullValue())));
         assertThat(globalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(globalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
+        assertThat(globalConfig.getGracePeriodMinutes(), is(2));
 
         // Submit the global configuration page with no changes
         j.configRoundtrip();
@@ -41,6 +42,7 @@ class ScheduleBuildGlobalConfigurationTest {
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(newGlobalConfig.getTimeZone(), is(TimeZone.getDefault().getID()));
+        assertThat(newGlobalConfig.getGracePeriodMinutes(), is(2));
     }
 
     @Test
@@ -50,6 +52,7 @@ class ScheduleBuildGlobalConfigurationTest {
         String newTimeZone = "Europe/Rome";
         globalConfig.setDefaultStartTime(newScheduleTime);
         globalConfig.setTimeZone(newTimeZone);
+        globalConfig.setGracePeriodMinutes(5);
 
         // Submit the global configuration page, will not change adjusted values
         j.configRoundtrip();
@@ -58,6 +61,7 @@ class ScheduleBuildGlobalConfigurationTest {
         assertThat(newGlobalConfig, is(not(nullValue())));
         assertThat(newGlobalConfig.getDefaultStartTime(), is("13:23:45"));
         assertThat(newGlobalConfig.getTimeZone(), is(newTimeZone));
+        assertThat(newGlobalConfig.getGracePeriodMinutes(), is(5));
     }
 
     @Test
