@@ -33,25 +33,23 @@ Alternatively, if the "Use cron-like scheduling" option is selected:
 
 To schedule a build via the queue, simply select the desired date and time, don't check `Schedule via Cron` 
 and set any parameters if applicable.
-When pressing the `Schedule Build` button, the build will be added to the queue with a quiet period 
+When pressing the `Schedule` button, the build will be added to the queue with a quiet period 
 calculated from the selected date and time. Due to Jenkins deduplicating builds in the queue, if a build for 
 the same job is added with identical parameters, the existing build in the queue will be updated to the new 
-quiet period instead of adding a new build to the queue. That means if start the build with `Build Now` 
+quiet period instead of adding a new build to the queue. That means if you start the build with `Build Now` 
 before the scheduled time, the scheduled build will be removed from the queue and the job will run 
 immediately. This also means that the job will start to run immediately after a Jenkins restart when Jenkins 
 was down at the scheduled time.
 
 ## Scheduling via Cron
 
-To schedule a build via the queue, simply select the desired date and time, check `Schedule via Cron`
+To schedule a build via cron, simply select the desired date and time, check `Schedule via Cron`
 and set any parameters if applicable. 
 
 When pressing the `Schedule` button, the build will be added to the list of planned builds for the job. At the scheduled date 
-and time, a new build will be created with the selected parameters. As the background worker that schedules the builds runs only 
-every minute, a build that is scheduled to run at a specific second within a minute will be added to the queue with a corresponding 
-quiet period to reach second precision.
+and time, a new build will be created with the selected parameters.
 
-Multiple builds can be scheduled for the same job with identical parameters at different times when they at least differ by a minute.
+Multiple builds can be scheduled for the same job with identical parameters at different times when they at least differ by a second.
 The scheduled builds are persistent and will survive Jenkins restarts.
 
 If a build is missed because Jenkins was down, it will be started immediately if the option `Trigger 
@@ -61,6 +59,8 @@ period to still trigger the build after the scheduled time.
 Builds scheduled via cron have a dedicated Cause.
 
 Renames or moves of jobs are supported. The scheduled builds will follow the job.
+
+The `Planned Builds` view offers the ability to cancel scheduled builds.
 
 ## Configure Schedule Build Plugin
 

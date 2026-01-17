@@ -6,6 +6,7 @@ import hudson.model.Item;
 import hudson.model.listeners.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -60,6 +61,29 @@ public class ScheduledRunManager {
                     scheduledRun.setJob(newName);
                 }
             }
+            save();
+        }
+    }
+
+    public static boolean hasPlannedRunsForJob(String jobName) {
+        synchronized (scheduledRuns) {
+            load();
+            return scheduledRuns.stream().anyMatch(r -> r.getJob().equals(jobName));
+        }
+    }
+
+    public static List<ScheduledRun> getPlannedRunsForJob(String jobName) {
+        synchronized (scheduledRuns) {
+            load();
+            return scheduledRuns.stream()
+                    .filter(r -> r.getJob().equals(jobName))
+                    .toList();
+        }
+    }
+
+    static void clearAll() {
+        synchronized (scheduledRuns) {
+            scheduledRuns.clear();
             save();
         }
     }

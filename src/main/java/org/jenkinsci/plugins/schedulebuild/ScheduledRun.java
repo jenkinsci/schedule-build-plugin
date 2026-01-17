@@ -2,26 +2,31 @@ package org.jenkinsci.plugins.schedulebuild;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Action;
-import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Job;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
-import hudson.model.TaskListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.model.ParameterizedJobMixIn;
+import jenkins.util.Timer;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Restricted(NoExternalUse.class)
 public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
+
+    private static final Logger LOGGER = Logger.getLogger(ScheduledRun.class.getName());
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -30,11 +35,13 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String id;
-    private String job;
+    private volatile String job;
     private final ZonedDateTime time;
     private final List<ParameterValue> values;
     private final boolean triggerOnMissed;
     private final ScheduledBuildCause cause;
+    private transient boolean started = false;
+    private transient boolean aborted = false;
 
     public ScheduledRun(
             String id,
@@ -49,6 +56,14 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         this.triggerOnMissed = triggerOnMissed;
         this.job = job;
         this.cause = cause;
+    }
+
+    public void setAborted(boolean aborted) {
+        this.aborted = aborted;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 
     public String getId() {
@@ -71,7 +86,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         return values;
     }
 
-    public Cause getCause() {
+    public ScheduledBuildCause getCause() {
         return cause;
     }
 
@@ -83,15 +98,12 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         this.job = job;
     }
 
-    public void run(TaskListener listener, int delay) {
-        Job<?, ?> j = Jenkins.get().getItemByFullName(job, Job.class);
-        if (j != null) {
-            run(j, delay);
-        } else {
-            if (listener != null) {
-                listener.error("Job " + job + " not found, cannot schedule build");
-            }
-        }
+    public void run(int delay) {
+        Job<?, ?> j = Jenkins.get().getItemByFullName(this.job, Job.class);
+        LOGGER.log(Level.FINER, () -> "Starting run for " + this.job + " in " + delay + " milliseconds.");
+        final ScheduledExecutorService scheduler = Timer.get();
+        this.started = true;
+        scheduler.schedule(this::start, delay, TimeUnit.MILLISECONDS);
     }
 
     public String getParametersTooltip() {
@@ -104,8 +116,19 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         return sb.toString();
     }
 
-    public void run(Job<?, ?> job, int delay) {
-        ParametersDefinitionProperty pp = job.getProperty(ParametersDefinitionProperty.class);
+    public void start() {
+        if (aborted) {
+            LOGGER.log(Level.FINE, () -> "Scheduled run for " + this.job + " has been aborted. Not starting build.");
+            return;
+        }
+        Job<?, ?> j = Jenkins.get().getItemByFullName(this.job, Job.class);
+        ScheduledRunManager.removeScheduledRun(this);
+        if (j == null) {
+            LOGGER.log(Level.FINE, "Job {0} not found. Cannot start scheduled run.", this.job);
+            return;
+        }
+        LOGGER.log(Level.FINER, () -> "Starting run for " + this.job + " now.");
+        ParametersDefinitionProperty pp = j.getProperty(ParametersDefinitionProperty.class);
         List<Action> actions = new ArrayList<>();
         if (cause != null) {
             actions.add(new CauseAction(cause));
@@ -113,12 +136,8 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         if (pp != null) {
             actions.add(new ParametersAction(values));
         }
-        // Calculate the delay in seconds
-        // The worker runs every minute at the 0 seconds, but we might have scheduled a job at 30 seconds past the
-        // minute
-        // So we need to calculate the delay in seconds, for which the job stays in the queue so it starts at the right
-        // time
-        ParameterizedJobMixIn.scheduleBuild2(job, delay, actions.toArray(new Action[0]));
+
+        ParameterizedJobMixIn.scheduleBuild2(j, 0, actions.toArray(new Action[0]));
     }
 
     @Override

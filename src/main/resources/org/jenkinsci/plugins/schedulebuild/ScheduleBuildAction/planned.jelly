@@ -1,53 +1,75 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
-  <l:layout title="${%Planned Builds}">
+  <l:layout title="${%Planned Runs}">
     <st:include page="sidepanel.jelly" it="${it.owner}" />
     <l:main-panel>
       <h2>${%Planned Builds}</h2>
-      <table class="jenkins-table jenkins-table--medium jenkins-table--auto-width">
-        <thead>
-          <tr>
-            <th>${%Scheduled Time}</th>
-            <th>${%Trigger on Missed}</th>
-            <j:if test="${it.owner.parameterized}">
-              <th class="jenkins-table__cell--tight"/>
-            </j:if>
-            <l:hasPermission permission="${it.owner.CANCEL}">
-              <th class="jenkins-table__cell--tight"/>
-            </l:hasPermission>
-          </tr>
-        </thead>
-        <tbody>
-          <j:forEach var="run" items="${it.plannedBuilds}">
-            <tr>
-              <td>${run.formattedTime}</td>
-              <td>
-                <j:set var="readOnlyMode" value="true"/>
-                <div style="display: flex">
-                  <f:checkbox checked="${run.triggerOnMissed}"/>
-                </div>
-              </td>
-              <j:if test="${it.owner.parameterized}">
-                <td class="jenkins-table__icon jenkins-table__cell--tight">
-                  <div class="jenkins-table__cell__button-wrapper">
-                    <l:icon src="symbol-options-outline plugin-ionicons-api" tooltip="${run.parametersTooltip}"/>
-                  </div>
-                </td>
-              </j:if>
-              <l:hasPermission permission="${it.owner.CANCEL}">
-                <td class="jenkins-table__cell--tight">
-                  <f:form name="cancelBuild" method="post" action="cancelBuild">
-                    <input type="hidden" name="id" value="${run.id}"/>
-                    <div class="jenkins-table__cell__button-wrapper">
-                      <button class="jenkins-button jenkins-!-destructive-color" type="submit" tooltip="${%Cancel Build}"><l:icon src="symbol-close-outline plugin-ionicons-api"/></button>
+      <j:set var="scheduledRuns" value="${it.plannedRuns}"/>
+      <j:choose>
+        <j:when test="${scheduledRuns.size() == 0}">
+          <div style="max-width: 750px">
+            <l:notice title="${%No builds are scheduled}" icon="symbol-calendar-outline plugin-ionicons-api">
+              <a href="."  type="button" class="jenkins-button jenkins-button--secondary">
+                ${%Schedule Build Now}
+              </a>
+            </l:notice>
+          </div>
+        </j:when>
+        <j:otherwise>
+          <table class="jenkins-table jenkins-table--medium jenkins-table--auto-width">
+            <thead>
+              <tr>
+                <th>${%Scheduled Time}</th>
+                <th>${%Trigger on Missed}</th>
+                <th/>
+                <j:if test="${it.owner.parameterized}">
+                  <th class="jenkins-table__cell--tight"/>
+                </j:if>
+                <l:hasPermission permission="${it.owner.CANCEL}">
+                  <th class="jenkins-table__cell--tight"/>
+                </l:hasPermission>
+              </tr>
+            </thead>
+            <tbody>
+              <j:forEach var="run" items="${scheduledRuns}">
+                <tr>
+                  <td>${run.formattedTime}</td>
+                  <td>
+                    <j:set var="readOnlyMode" value="true"/>
+                    <div style="display: flex">
+                      <f:checkbox checked="${run.triggerOnMissed}"/>
                     </div>
-                  </f:form>
-                </td>
-              </l:hasPermission>
-            </tr>
-          </j:forEach>
-        </tbody>
-      </table>
+                  </td>
+                  <td class="jenkins-table__icon jenkins-table__cell--tight">
+                    <j:if test="${run.started}">
+                      <div class="jenkins-table__cell__button-wrapper">
+                        <l:icon src="symbol-timer-outline plugin-ionicons-api" tooltip="${%This build is about to start.}"/>
+                      </div>
+                    </j:if>
+                  </td>
+                  <j:if test="${it.owner.parameterized}">
+                    <td class="jenkins-table__icon jenkins-table__cell--tight">
+                      <div class="jenkins-table__cell__button-wrapper">
+                        <l:icon src="symbol-options-outline plugin-ionicons-api" tooltip="${run.parametersTooltip}"/>
+                      </div>
+                    </td>
+                  </j:if>
+                  <l:hasPermission permission="${it.owner.CANCEL}">
+                    <td class="jenkins-table__cell--tight">
+                      <f:form name="cancelBuild" method="post" action="cancelBuild">
+                        <input type="hidden" name="id" value="${run.id}"/>
+                        <div class="jenkins-table__cell__button-wrapper">
+                          <button class="jenkins-button jenkins-!-destructive-color" type="submit" tooltip="${%Cancel Build}"><l:icon src="symbol-close-outline plugin-ionicons-api"/></button>
+                        </div>
+                      </f:form>
+                    </td>
+                  </l:hasPermission>
+                </tr>
+              </j:forEach>
+            </tbody>
+          </table>
+        </j:otherwise>
+      </j:choose>
     </l:main-panel>
   </l:layout>
 </j:jelly>

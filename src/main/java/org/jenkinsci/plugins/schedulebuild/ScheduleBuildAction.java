@@ -126,7 +126,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
     }
 
     public Badge getBadge() {
-        List<ScheduledRun> plannedBuilds = getPlannedBuilds();
+        List<ScheduledRun> plannedBuilds = getPlannedRuns();
         if (plannedBuilds.isEmpty()) {
             return null;
         }
@@ -142,6 +142,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
         try {
             for (ScheduledRun sr : ScheduledRunManager.getScheduledRuns()) {
                 if (sr.getId().equals(id) && sr.getJob().equals(target.getFullName())) {
+                    sr.setAborted(true);
                     ScheduledRunManager.removeScheduledRun(sr);
                     break;
                 }
@@ -232,19 +233,12 @@ public class ScheduleBuildAction implements Action, IconSpec {
         }
     }
 
-    public boolean hasPlannedBuilds() {
-        for (ScheduledRun sr : ScheduledRunManager.getScheduledRuns()) {
-            if (sr.getJob().equals(target.getFullName())) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasPlannedRuns() {
+        return ScheduledRunManager.hasPlannedRunsForJob(target.getFullName());
     }
 
-    public List<ScheduledRun> getPlannedBuilds() {
-        return ScheduledRunManager.getScheduledRuns().stream()
-                .filter(r -> r.getJob().equals(target.getFullName()))
-                .toList();
+    public List<ScheduledRun> getPlannedRuns() {
+        return ScheduledRunManager.getPlannedRunsForJob(target.getFullName());
     }
 
     public boolean isParameterized() {
