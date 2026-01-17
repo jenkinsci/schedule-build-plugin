@@ -12,7 +12,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+@Restricted(NoExternalUse.class)
 public class ScheduledBuildManager {
 
     private static final Logger LOGGER = Logger.getLogger(ScheduledBuildManager.class.getName());

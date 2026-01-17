@@ -12,9 +12,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jenkinsci.Symbol;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Symbol("scheduleOnceScheduler")
+@Restricted(NoExternalUse.class)
 public class SchedulerWorker extends AsyncPeriodicWork {
 
     private static final Logger LOGGER = Logger.getLogger(SchedulerWorker.class.getName());
