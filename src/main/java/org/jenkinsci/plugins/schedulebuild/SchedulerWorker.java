@@ -27,6 +27,9 @@ public class SchedulerWorker extends AsyncPeriodicWork {
     protected void execute(TaskListener listener) throws IOException, InterruptedException {
         Set<ScheduledRun> scheduledRuns = ScheduledRunManager.getScheduledRuns();
         ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime nextMinute =
+                now.plusMinutes(1).truncatedTo(ChronoUnit.MINUTES).minusNanos(1000);
+        int gracePeriodSeconds = ScheduleBuildGlobalConfiguration.get().getGracePeriodMinutes() * 60;
         for (ScheduledRun scheduledRun : scheduledRuns) {
             LOGGER.log(
                     Level.FINE,
@@ -35,10 +38,15 @@ public class SchedulerWorker extends AsyncPeriodicWork {
             ZonedDateTime time = scheduledRun.getTime();
             long delay = ChronoUnit.SECONDS.between(now, time);
 
+            if (time.isAfter(nextMinute)) {
+                // avoid that a small delay in the worker causes builds from the next minute to be added to the
+                // queue with a delay of 1 minute
+                continue;
+            }
             if (delay < 60) {
                 if (delay < 0) {
                     // schedule was missed, run immediately
-                    if (delay < -120) {
+                    if (delay < -gracePeriodSeconds) {
                         if (!scheduledRun.isTriggerOnMissed()) {
                             LOGGER.log(
                                     Level.WARNING,

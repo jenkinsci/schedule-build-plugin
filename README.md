@@ -45,11 +45,19 @@ was down at the scheduled time.
 
 To schedule a build via the queue, simply select the desired date and time, check `Schedule via Cron`
 and set any parameters if applicable. 
-When pressing the `Schedule Build` button, the build will be added to the list of planned builds for the job. At the scheduled date 
-and time, a new build will be created with the selected parameters. As the background worker that schedules the builds runs only every minute, a build that is scheduled to run at a specific second within a minute will be added to the queue with a corresponding quiet period to reach second precision.
+
+When pressing the `Schedule` button, the build will be added to the list of planned builds for the job. At the scheduled date 
+and time, a new build will be created with the selected parameters. As the background worker that schedules the builds runs only 
+every minute, a build that is scheduled to run at a specific second within a minute will be added to the queue with a corresponding 
+quiet period to reach second precision.
+
 Multiple builds can be scheduled for the same job with identical parameters at different times when they at least differ by a minute.
 The scheduled builds are persistent and will survive Jenkins restarts.
-If a build is scheduled for a time in the past, it will be started immediately if the option `Trigger on missed` is selected. Without that option, the build will be skipped when Jenkins was down. There is a grace period of 2 minutes to still trigger the build after the scheduled time.
+
+If a build is missed because Jenkins was down, it will be started immediately if the option `Trigger on missed` is selected. Without
+that option, the build will be skipped. There is a grace period of 2 minutes to still trigger the build after the scheduled time.
+
+Builds scheduled via cron have a dedicated Cause.
 
 ## Configure Schedule Build Plugin
 
@@ -72,6 +80,7 @@ unclassified:
   scheduleBuild:
     defaultStartTime: "11:00:00 PM"
     timeZone: "Europe/Paris"
+    gracePeriodMinutes: 3
 ```
 
 ## Release Notes
