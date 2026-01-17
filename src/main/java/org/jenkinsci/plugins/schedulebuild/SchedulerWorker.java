@@ -58,14 +58,14 @@ public class SchedulerWorker extends AsyncPeriodicWork {
                     if (!scheduledBuild.isTriggerOnMissed()) {
                         LOGGER.log(
                                 Level.WARNING,
-                                "Scheduled build for {0} was missed by {1} milliseconds. It will be skipped.",
+                                "Scheduled build for job {0} was missed by {1} milliseconds. It will be skipped as triggerOnMissed is not set.",
                                 new Object[] {scheduledBuild.getJob(), -delay});
                         ScheduledBuildManager.removeScheduledBuild(scheduledBuild);
                         continue;
                     }
                     LOGGER.log(
                             Level.WARNING,
-                            "Scheduled build for {0} was missed by {1} milliseconds. It will be started immediately.",
+                            "Scheduled build for {0} was missed by {1} milliseconds. It will be started immediately as triggerOnMissed is set.",
                             new Object[] {scheduledBuild.getJob(), -delay});
                 }
                 delay = 0;

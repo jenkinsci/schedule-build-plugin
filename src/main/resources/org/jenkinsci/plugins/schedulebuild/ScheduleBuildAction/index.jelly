@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:f="/lib/form">
-    <l:layout title="Test" norefresh="true" permission="${it.owner.BUILD}">
+    <l:layout title="${%Schedule Build}" norefresh="true" permission="${it.owner.BUILD}">
         <st:include page="sidepanel.jelly" it="${it.owner}" />
         <l:main-panel>
             <h1>${%Project} ${it.owner.name}</h1>
