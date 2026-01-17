@@ -25,19 +25,19 @@ public class SchedulerWorker extends AsyncPeriodicWork {
 
     @Override
     protected void execute(TaskListener listener) throws IOException, InterruptedException {
-        Set<ScheduledRun> scheduledRuns = ScheduledRunManager.getScheduledRuns();
+        Set<ScheduledBuild> scheduledBuilds = ScheduledBuildManager.getScheduledBuilds();
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime nextMinute =
                 now.plusMinutes(1).truncatedTo(ChronoUnit.MINUTES).minusNanos(1000);
         int gracePeriodMillis = ScheduleBuildGlobalConfiguration.get().getGracePeriodMinutes() * 60 * 1000;
-        for (ScheduledRun scheduledRun : scheduledRuns) {
+        for (ScheduledBuild scheduledBuild : scheduledBuilds) {
             LOGGER.log(
                     Level.FINE,
-                    () -> "Looking at scheduled run: " + scheduledRun.getJob() + " scheduled for "
-                            + scheduledRun.getFormattedTime());
-            ZonedDateTime time = scheduledRun.getTime();
+                    () -> "Looking at scheduled build: " + scheduledBuild.getJob() + " scheduled for "
+                            + scheduledBuild.getFormattedTime());
+            ZonedDateTime time = scheduledBuild.getTime();
 
-            if (scheduledRun.isStarted()) {
+            if (scheduledBuild.isStarted()) {
                 // safeguarding against multiple starts
                 continue;
             }
@@ -50,25 +50,25 @@ public class SchedulerWorker extends AsyncPeriodicWork {
             long delay = ChronoUnit.MILLIS.between(now, time);
 
             if (delay < 0) {
-                // schedule was missed, run immediately
+                // schedule was missed, start immediately
                 if (delay < -gracePeriodMillis) {
-                    if (!scheduledRun.isTriggerOnMissed()) {
+                    if (!scheduledBuild.isTriggerOnMissed()) {
                         LOGGER.log(
                                 Level.WARNING,
-                                "Scheduled run for {0} was missed by {1} milliseconds. It will be skipped.",
-                                new Object[] {scheduledRun.getJob(), -delay});
-                        ScheduledRunManager.removeScheduledRun(scheduledRun);
+                                "Scheduled build for {0} was missed by {1} milliseconds. It will be skipped.",
+                                new Object[] {scheduledBuild.getJob(), -delay});
+                        ScheduledBuildManager.removeScheduledBuild(scheduledBuild);
                         continue;
                     }
                     LOGGER.log(
                             Level.WARNING,
-                            "Scheduled run for {0} was missed by {1} milliseconds. It will be started immediately.",
-                            new Object[] {scheduledRun.getJob(), -delay});
+                            "Scheduled build for {0} was missed by {1} milliseconds. It will be started immediately.",
+                            new Object[] {scheduledBuild.getJob(), -delay});
                 }
                 delay = 0;
             }
-            LOGGER.log(Level.FINE, () -> "Scheduling run for: " + scheduledRun.getJob());
-            scheduledRun.run((int) delay);
+            LOGGER.log(Level.FINE, () -> "Scheduling build for: " + scheduledBuild.getJob());
+            scheduledBuild.run((int) delay);
         }
     }
 

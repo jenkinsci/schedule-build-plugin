@@ -17,7 +17,7 @@ import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 @WithJenkins
-public class ScheduledRunManagerTest {
+public class ScheduledBuildManagerTest {
 
     FreeStyleProject project;
     MockFolder f;
@@ -26,67 +26,67 @@ public class ScheduledRunManagerTest {
     void setUp(JenkinsRule r) throws IOException {
         project = r.createFreeStyleProject();
         f = r.createFolder("parent-folder");
-        ScheduledRunManager.clearAll();
         List<ParameterValue> params = new ArrayList<>();
-        ScheduledRun run = new ScheduledRun(
+        ScheduledBuildManager.clear();
+        ScheduledBuild build = new ScheduledBuild(
                 "123",
                 project.getFullName(),
                 ZonedDateTime.now().plusHours(3),
                 params,
                 true,
                 new ScheduledBuildCause());
-        ScheduledRunManager.addScheduledRun(run);
+        ScheduledBuildManager.addScheduledBuild(build);
     }
 
     @Test
-    void testHasPlannedRuns() {
-        assertTrue(ScheduledRunManager.hasPlannedRunsForJob(project.getFullName()));
+    void testHasPlannedBuilds() {
+        assertTrue(ScheduledBuildManager.hasPlannedBuildsForJob(project.getFullName()));
     }
 
     @Test
-    void testGetPlannedRuns() {
-        List<ScheduledRun> builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+    void testGetPlannedBuilds() {
+        List<ScheduledBuild> builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
     }
 
     @Test
-    void testRemovePlannedRuns() {
-        List<ScheduledRun> builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+    void testRemovePlannedBuild() {
+        List<ScheduledBuild> builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
-        ScheduledRunManager.removeScheduledRun(builds.get(0));
-        builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        ScheduledBuildManager.removeScheduledBuild(builds.get(0));
+        builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(0, builds.size());
     }
 
     @Test
     void testRenameJob() throws IOException {
-        List<ScheduledRun> builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        List<ScheduledBuild> builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
         project.renameTo("new-name");
-        builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
     }
 
     @Test
     void testDeleteJob() throws IOException, InterruptedException {
-        List<ScheduledRun> builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        List<ScheduledBuild> builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
         project.delete();
-        builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(0, builds.size());
     }
 
     @Test
     void testMoveJob() throws IOException {
-        List<ScheduledRun> builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        List<ScheduledBuild> builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
         Items.move(project, f);
-        builds = ScheduledRunManager.getPlannedRunsForJob(project.getFullName());
+        builds = ScheduledBuildManager.getPlannedBuildsForJob(project.getFullName());
         assertEquals(1, builds.size());
         assertEquals(project.getFullName(), builds.get(0).getJob());
     }

@@ -126,7 +126,7 @@ public class ScheduleBuildAction implements Action, IconSpec {
     }
 
     public Badge getBadge() {
-        List<ScheduledRun> plannedBuilds = getPlannedRuns();
+        List<ScheduledBuild> plannedBuilds = getPlannedBuilds();
         if (plannedBuilds.isEmpty()) {
             return null;
         }
@@ -140,14 +140,18 @@ public class ScheduleBuildAction implements Action, IconSpec {
     public void doCancelBuild(@QueryParameter String id, StaplerResponse2 rsp) {
         target.checkPermission(Item.CANCEL);
         try {
-            for (ScheduledRun sr : ScheduledRunManager.getScheduledRuns()) {
-                if (sr.getId().equals(id) && sr.getJob().equals(target.getFullName())) {
+            for (ScheduledBuild sr : ScheduledBuildManager.getPlannedBuildsForJob(target.getFullName())) {
+                if (sr.getId().equals(id)) {
                     sr.setAborted(true);
-                    ScheduledRunManager.removeScheduledRun(sr);
+                    ScheduledBuildManager.removeScheduledBuild(sr);
                     break;
                 }
             }
-            rsp.sendRedirect2("./planned");
+            if (ScheduledBuildManager.hasPlannedBuildsForJob(target.getFullName())) {
+                rsp.sendRedirect2("./planned");
+            } else {
+                rsp.sendRedirect2("..");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -222,10 +226,10 @@ public class ScheduleBuildAction implements Action, IconSpec {
                 }
             }
 
-            ScheduledRun sr = new ScheduledRun(
+            ScheduledBuild sr = new ScheduledBuild(
                     id, target.getFullName(), startDateTime, values, triggerOnMissed, new ScheduledBuildCause());
 
-            ScheduledRunManager.addScheduledRun(sr);
+            ScheduledBuildManager.addScheduledBuild(sr);
 
             rsp.sendRedirect2("..");
         } catch (IOException | ServletException e) {
@@ -233,12 +237,12 @@ public class ScheduleBuildAction implements Action, IconSpec {
         }
     }
 
-    public boolean hasPlannedRuns() {
-        return ScheduledRunManager.hasPlannedRunsForJob(target.getFullName());
+    public boolean hasPlannedBuilds() {
+        return ScheduledBuildManager.hasPlannedBuildsForJob(target.getFullName());
     }
 
-    public List<ScheduledRun> getPlannedRuns() {
-        return ScheduledRunManager.getPlannedRunsForJob(target.getFullName());
+    public List<ScheduledBuild> getPlannedBuilds() {
+        return ScheduledBuildManager.getPlannedBuildsForJob(target.getFullName());
     }
 
     public boolean isParameterized() {

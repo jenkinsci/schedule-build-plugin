@@ -4,9 +4,9 @@
     <st:include page="sidepanel.jelly" it="${it.owner}" />
     <l:main-panel>
       <h2>${%Planned Builds}</h2>
-      <j:set var="scheduledRuns" value="${it.plannedRuns}"/>
+      <j:set var="scheduledBuilds" value="${it.plannedBuilds}"/>
       <j:choose>
-        <j:when test="${scheduledRuns.size() == 0}">
+        <j:when test="${scheduledBuilds.isEmpty()}">
           <div style="max-width: 750px">
             <l:notice title="${%No builds are scheduled}" icon="symbol-calendar-outline plugin-ionicons-api">
               <a href="."  type="button" class="jenkins-button jenkins-button--secondary">
@@ -31,7 +31,7 @@
               </tr>
             </thead>
             <tbody>
-              <j:forEach var="run" items="${scheduledRuns}">
+              <j:forEach var="run" items="${scheduledBuilds}">
                 <tr>
                   <td>${run.formattedTime}</td>
                   <td>

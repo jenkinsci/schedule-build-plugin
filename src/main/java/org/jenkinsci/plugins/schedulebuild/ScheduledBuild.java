@@ -24,9 +24,9 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Restricted(NoExternalUse.class)
-public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
+public class ScheduledBuild implements Serializable, Comparable<ScheduledBuild> {
 
-    private static final Logger LOGGER = Logger.getLogger(ScheduledRun.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ScheduledBuild.class.getName());
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -43,7 +43,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     private transient boolean started = false;
     private transient boolean aborted = false;
 
-    public ScheduledRun(
+    public ScheduledBuild(
             String id,
             String job,
             ZonedDateTime time,
@@ -99,8 +99,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     }
 
     public void run(int delay) {
-        Job<?, ?> j = Jenkins.get().getItemByFullName(this.job, Job.class);
-        LOGGER.log(Level.FINER, () -> "Starting run for " + this.job + " in " + delay + " milliseconds.");
+        LOGGER.log(Level.FINER, () -> "Starting build for " + this.job + " in " + delay + " milliseconds.");
         final ScheduledExecutorService scheduler = Timer.get();
         this.started = true;
         scheduler.schedule(this::start, delay, TimeUnit.MILLISECONDS);
@@ -118,16 +117,16 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
 
     public void start() {
         if (aborted) {
-            LOGGER.log(Level.FINE, () -> "Scheduled run for " + this.job + " has been aborted. Not starting build.");
+            LOGGER.log(Level.FINE, () -> "Scheduled build for " + this.job + " has been aborted. Not starting build.");
             return;
         }
         Job<?, ?> j = Jenkins.get().getItemByFullName(this.job, Job.class);
-        ScheduledRunManager.removeScheduledRun(this);
+        ScheduledBuildManager.removeScheduledBuild(this);
         if (j == null) {
-            LOGGER.log(Level.FINE, "Job {0} not found. Cannot start scheduled run.", this.job);
+            LOGGER.log(Level.FINE, "Job {0} not found. Cannot start scheduled build.", this.job);
             return;
         }
-        LOGGER.log(Level.FINER, () -> "Starting run for " + this.job + " now.");
+        LOGGER.log(Level.FINER, () -> "Starting build for " + this.job + " now.");
         ParametersDefinitionProperty pp = j.getProperty(ParametersDefinitionProperty.class);
         List<Action> actions = new ArrayList<>();
         if (cause != null) {
@@ -141,7 +140,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
     }
 
     @Override
-    public int compareTo(ScheduledRun o) {
+    public int compareTo(ScheduledBuild o) {
         int c = time.compareTo(o.time);
         if (c != 0) {
             return c;
@@ -157,7 +156,7 @@ public class ScheduledRun implements Serializable, Comparable<ScheduledRun> {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        ScheduledRun other = (ScheduledRun) obj;
+        ScheduledBuild other = (ScheduledBuild) obj;
         return id.equals(other.id);
     }
 
