@@ -45,7 +45,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     // time portion (hours, minutes, seconds, etc.) while the date
     // portion is ignored.
     private transient Date defaultScheduleTime;
-    private String timeZone;
+    private ZoneId timeZone;
 
     private String defaultStartTime;
 
@@ -61,7 +61,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     @DataBoundConstructor
     public ScheduleBuildGlobalConfiguration() {
-        this.timeZone = TimeZone.getDefault().getID();
+        this.timeZone = ZoneId.systemDefault();
         defaultStartTime = "22:00:00";
         load();
         defaultScheduleLocalTime = LocalTime.parse(defaultStartTime, getTimeFormatter());
@@ -116,21 +116,21 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
     }
 
     public String getTimeZone() {
-        return timeZone;
+        return timeZone.toString();
     }
 
     @DataBoundSetter
     public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
+        try {
+            this.timeZone = ZoneId.of(timeZone);
+        } catch (DateTimeException e) {
+            this.timeZone = ZoneId.systemDefault();
+        }
         save();
     }
 
     public ZoneId getZoneId() {
-        try {
-            return ZoneId.of(timeZone);
-        } catch (DateTimeException dte) {
-            return ZoneId.systemDefault();
-        }
+        return timeZone;
     }
 
     private DateTimeFormatter getTimeFormatter() {
@@ -178,7 +178,7 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
         ListBoxModel items = new ListBoxModel();
         Set<String> zoneIds = new TreeSet<>(ZoneId.getAvailableZoneIds());
         for (String id : zoneIds) {
-            if (id.equalsIgnoreCase(timeZone)) {
+            if (id.equalsIgnoreCase(timeZone.toString())) {
                 items.add(new ListBoxModel.Option(id, id, true));
             } else {
                 items.add(id);
