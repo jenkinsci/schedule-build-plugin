@@ -20,14 +20,19 @@ Then select date and time when to schedule the build and set options and paramet
 
 ![](docs/images/Schedule_Page.png)  
 
-If selected the build will be added to the build queue with the respective quiet
-period.
+If selected the build will be added to the build queue with the respective quiet period.
+
+If the job is parameterized, after the "Schedule" button is pressed, the parameter page for the job is displayed to the user immediately.
+
+![](docs/images/Schedule_Parameters_Page.png)  
+
+Once the parameters are specified, the build will be added to the build queue with the respective quiet
+period and parameters, if applicable.
 
 ![](docs/images/Schedule_Build_Queue.png)
 
 Alternatively, if the "Use cron-like scheduling" option is selected:
 ![](docs/images/Planned_Builds.png)
-
 
 ## Scheduling via Queue
 
