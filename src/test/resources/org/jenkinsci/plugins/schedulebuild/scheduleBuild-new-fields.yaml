@@ -2,3 +2,4 @@ unclassified:
   scheduleBuild:
     defaultStartTime: "21:34"
     timeZone: "Europe/Berlin"
+    gracePeriodMinutes: "3"
