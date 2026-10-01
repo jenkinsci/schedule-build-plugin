@@ -18,6 +18,7 @@ class JCasCGlobalNewFieldsTest extends AbstractRoundTripTest {
         assertThat(globalConfig, is(not(nullValue())));
         assertThat(globalConfig.getDefaultStartTime(), is("21:34:00"));
         assertThat(globalConfig.getTimeZone(), is("Europe/Berlin"));
+        assertThat(globalConfig.getGracePeriodMinutes(), is(3));
     }
 
     @Override

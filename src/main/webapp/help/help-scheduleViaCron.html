@@ -1,0 +1,13 @@
+<div>
+  <p>
+    If this option is enabled, the build will be added to the queue at the specified time, with a delay not more than a minute to reach
+    second precision in scheduling. This mode has the advantage that the build is guaranteed to happen, even when a build with the
+    same parameters is triggered. By default, Jenkins will deduplicate builds with same parameters, and only one of them will be executed. This
+    will also set a dedicated cause for the build, so it is clear why the build was triggered.
+  </p>
+  <p>
+    If disabled, the build will be added to the queue immediately. This mode has higher visibility, but there is no guarantee that the build will
+    actually run at the scheduled time. If another build with the same parameters is triggered without delay, Jenkins will deduplicate the builds
+    and only the one that starts next will be executed.
+  </p>
+</div>

@@ -1,0 +1,9 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+  <j:if test="${it.hasPermission(it.BUILD) and it.buildable}">
+    <l:task href="${h.getActionUrl(it.url, action)}/" icon="symbol-calendar-outline plugin-ionicons-api" title="${action.displayName}"/>
+  </j:if>
+  <j:if test="${action.hasPlannedBuilds()}">
+    <l:task href="${h.getActionUrl(it.url, action)}/planned" icon="symbol-timer-outline plugin-ionicons-api" title="${%Planned Builds}" badge="${action.badge}"/>
+  </j:if>
+</j:jelly>
