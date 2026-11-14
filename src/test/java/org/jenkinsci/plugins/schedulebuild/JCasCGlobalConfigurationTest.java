@@ -18,6 +18,7 @@ class JCasCGlobalConfigurationTest extends AbstractRoundTripTest {
         assertThat(globalConfig, is(not(nullValue())));
         assertThat(globalConfig.getDefaultStartTime(), is("22:00:00"));
         assertThat(globalConfig.getTimeZone(), is("Europe/Paris"));
+        assertThat(globalConfig.getGracePeriodMinutes(), is(2));
     }
 
     @Override
