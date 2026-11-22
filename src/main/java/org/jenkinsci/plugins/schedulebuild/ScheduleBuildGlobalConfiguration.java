@@ -49,6 +49,8 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
 
     private String defaultStartTime;
 
+    private int gracePeriodMinutes = 2;
+
     private transient LocalTime defaultScheduleLocalTime;
 
     private static final Logger LOGGER = Logger.getLogger(ScheduleBuildGlobalConfiguration.class.getName());
@@ -76,6 +78,16 @@ public class ScheduleBuildGlobalConfiguration extends GlobalConfiguration {
             sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // xstream serializes with UTC
             setDefaultStartTime(sdf.format(this.defaultScheduleTime));
         }
+    }
+
+    public int getGracePeriodMinutes() {
+        return gracePeriodMinutes;
+    }
+
+    @DataBoundSetter
+    public void setGracePeriodMinutes(int gracePeriodMinutes) {
+        this.gracePeriodMinutes = gracePeriodMinutes;
+        save();
     }
 
     public String getDefaultScheduleTime() {
